@@ -1,0 +1,15 @@
+# [show_type]
+# dirty
+
+[tags]
+fix
+review
+todo
+
+[ignore]
+.git
+*.swp
+_vendor
+
+[type]
+".go"  => ["//", "/*"]
