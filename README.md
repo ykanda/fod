@@ -7,21 +7,19 @@ will output the path of the selected directories and files to standard output.
 __Example__
 
     cd `fod`
-	  mv `fod`
-	  git add `fod`
-	  git add `fod -m` # comming soon
+    mv `fod`
+    git add `fod`
+    git add `fod -m` # comming soon
 
 
 Options and arguments
 ================
 
-| ------------ | -------------------------------- |
-| **option**   | **Explaination**                 |
-| ------------ | -------------------------------- |
-| -f           | file select mode                 |
-| -d (default) | directory select mode            |
-| -m           | multiple selection mode          |
-| ------------ | -------------------------------- |
+| **option**   | **Explaination**                        |
+| ------------ | --------------------------------------- |
+| -f           | file select mode                        |
+| -d (default) | directory select mode                   |
+| -m           | multiple selection mode (comming soon)  |
 
 Install
 ================
@@ -32,7 +30,6 @@ Install
 Key Bindings
 ================
 
-| ------------ | -------------------------------- |
 | **KEY**      | **Explaination**                 |
 | ------------ | -------------------------------- |
 | Enter        | open directory                   |
@@ -44,7 +41,6 @@ Key Bindings
 | Ctrl + C     | cancel and exit, no output       |
 | Ctrl + Q     | cancel and exit, no output       |
 | Esc          | cancel and exit, no output       |
-| ------------ | -------------------------------- |
 
 
 Development, Contributions
@@ -68,7 +64,7 @@ LICENSE
 
 [The MIT License](http://opensource.org/licenses/mit-license.php)
 
-Copyright (C) 2015 Yasuhiro KANDA (@kandayasu)
+Copyright (C) 2015 Yasuhiro KANDA ([@kandayasu](https://twitter.com/kandayasu))
 
 
 TODO
