@@ -9,17 +9,17 @@ import (
 import "github.com/k0kubun/pp"
 
 func InitDebug() {
-	if os.Getenv("VCD_ENABLE_DEBUG") != "" {
+	if os.Getenv("FOD_ENABLE_DEBUG") != "" {
 	}
 }
 
 func CloseDebug() {
-	if os.Getenv("VCD_ENABLE_DEBUG") != "" {
+	if os.Getenv("FOD_ENABLE_DEBUG") != "" {
 	}
 }
 
 func DebugLog(args ...interface{}) {
-	if os.Getenv("VCD_ENABLE_DEBUG") != "" {
+	if os.Getenv("FOD_ENABLE_DEBUG") != "" {
 		_, file, line, _ := runtime.Caller(1)
 		output := pp.Sprintf(
 			"%s line %s\n%v\n",
