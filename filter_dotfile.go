@@ -22,8 +22,13 @@ func DotfileFilterSinleton() *DotfileFilter {
 // filter function
 func (self *DotfileFilter) Filter(entries []Entry) (result []Entry) {
 	for _, entry := range entries {
-		included := (entry.Path == "../") || (strings.HasPrefix(entry.Path, ".") == false)
-		if included {
+		f := true
+		if entry.Path != "../" {
+			if self.enable == true && strings.HasPrefix(entry.Path, ".") {
+				f = false
+			}
+		}
+		if f {
 			result = append(result, entry)
 		}
 	}

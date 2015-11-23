@@ -76,12 +76,18 @@ Loop:
 			FilenameFilterSingleton().DelCharacter()
 			self.concrete.Refresh()
 
-		// Chose
+		// chose
 		case event.Type == termbox.EventKey && event.Key == termbox.KeyCtrlO:
 			if self.concrete.Choice() {
 				break Loop
 			}
 
+		// toggle dotfile-filter
+		case event.Type == termbox.EventKey && event.Key == termbox.KeyCtrlH:
+			DotfileFilterSinleton().Toggle()
+			self.concrete.Refresh()
+
+		// cancel and exit
 		case event.Type == termbox.EventKey && event.Key == termbox.KeyCtrlQ:
 			fallthrough
 		case event.Type == termbox.EventKey && event.Key == termbox.KeyCtrlC:
