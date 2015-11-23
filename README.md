@@ -37,6 +37,7 @@ Key Bindings
 | Arrow Down   | move cursor down                 |
 | Arrow Left   | move parent directory            |
 | Arrow Right  | move sub directory               |
+| Ctrl + H     | toggle dotfile filter            |
 | Ctrl + O     | OK, exit and output selcted item |
 | Ctrl + C     | cancel and exit, no output       |
 | Ctrl + Q     | cancel and exit, no output       |
