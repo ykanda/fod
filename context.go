@@ -20,3 +20,7 @@ func (self *AppContext) Mode() (mode Mode) {
 	// DebugPrint("mode", mode)
 	return
 }
+
+func (self *AppContext) Multi() bool {
+	return self.Bool("multi")
+}

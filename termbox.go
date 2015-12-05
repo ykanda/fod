@@ -5,7 +5,7 @@ import "github.com/nsf/termbox-go"
 
 type DrawContext interface {
 	// get entries
-	GetEntries() []Entry
+	GetEntries() []*Entry
 
 	// get current item index in entries
 	GetCurrentItemIndex() int
@@ -31,10 +31,19 @@ func drawString(x int, y int, text string, fgColor termbox.Attribute, bgColor te
 	}
 }
 
+func marked(m bool) string {
+	if m == true {
+		return "*"
+	} else {
+		return " "
+	}
+}
+
 // draw menu
 func drawEntries(dc DrawContext) {
 
 	entries := dc.GetEntries()
+	DebugLog(entries)
 	currentIndex := dc.GetCurrentItemIndex()
 
 	_, h := termbox.Size()
@@ -50,8 +59,8 @@ func drawEntries(dc DrawContext) {
 
 	for index, entry := range entries[pageTop:pageEnd] {
 		line := fmt.Sprintf(
-			"[%s] %s",
-			entry.TypeCharcter(),
+			"[%s] %s %s",
+			entry.TypeCharcter(), marked(entry.Marked),
 			entry.Path,
 		)
 		switch index == cursorIndex {

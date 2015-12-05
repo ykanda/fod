@@ -20,7 +20,7 @@ func DotfileFilterSinleton() *DotfileFilter {
 }
 
 // filter function
-func (self *DotfileFilter) Filter(entries []Entry) (result []Entry) {
+func (self *DotfileFilter) Filter(entries []*Entry) (result []*Entry) {
 	for _, entry := range entries {
 		f := true
 		if entry.Path != "../" {

@@ -33,7 +33,7 @@ func FilenameFilterSingleton() *FilenameFilter {
 }
 
 // filter function
-func (self *FilenameFilter) Filter(entries []Entry) (result []Entry) {
+func (self *FilenameFilter) Filter(entries []*Entry) (result []*Entry) {
 	switch self.filterString == "" {
 	case true:
 		result = entries

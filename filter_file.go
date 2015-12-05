@@ -13,6 +13,6 @@ func FileFilterSingleton() *FileFilter {
 }
 
 // filter function
-func (self *FileFilter) Filter(entries []Entry) []Entry {
+func (self *FileFilter) Filter(entries []*Entry) []*Entry {
 	return entries // NOP
 }

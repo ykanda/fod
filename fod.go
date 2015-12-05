@@ -2,7 +2,6 @@ package main
 
 // [todo] - symlink
 // [todo] - support windows
-// [todo] - multiple select
 // [todo] - bookmark
 
 import (
@@ -10,10 +9,12 @@ import (
 	"os"
 	"runtime"
 	"sync"
+	"time"
 )
 
 import (
 	"github.com/codegangsta/cli"
+	"github.com/mitchellh/panicwrap"
 	"github.com/nsf/termbox-go"
 )
 
@@ -33,18 +34,23 @@ var Flags = []cli.Flag{
 		Usage: "base dir",
 	},
 	cli.BoolFlag{
-		Name:  "multiple, multi, m",
+		Name:  "multi, m",
 		Usage: "multiple select mode",
 	},
 }
 
 // entry point
 func main() {
-	InitDebug()
-
 	cpus := runtime.NumCPU()
 	runtime.GOMAXPROCS(cpus)
 
+	var exitStatus int
+	if os.Getenv("FOD_ENABLE_PANIC_LOG") != "" {
+		_exitStatus, _ := panicwrap.BasicWrap(panicHandler)
+		exitStatus = _exitStatus
+	}
+
+	InitDebug()
 	app := cli.NewApp()
 	app.Name = "vcd"
 	app.Version = Version()
@@ -54,8 +60,19 @@ func main() {
 	app.Action = doMain
 	app.Flags = Flags
 	app.Run(os.Args)
-
 	CloseDebug()
+
+	if os.Getenv("FOD_ENABLE_PANIC_LOG") != "" {
+		if exitStatus > 0 {
+			os.Exit(exitStatus)
+		}
+	}
+}
+
+func panicHandler(output string) {
+	f, _ := os.Create(fmt.Sprintf("crash_%d.log", time.Now().Unix()))
+	fmt.Fprintf(f, "The child panicked!\n\n%s", output)
+	os.Exit(1)
 }
 
 // main function
@@ -70,7 +87,7 @@ func doMain(context *cli.Context) {
 
 	// create selector
 	var selector *SelectorFramework
-	if _selector, err := NewSelectorFramework(appContext.Mode()); err == nil {
+	if _selector, err := NewSelectorFramework(appContext.Mode(), appContext.Multi()); err == nil {
 		selector = _selector
 	} else {
 		fmt.Fprintln(os.Stderr, err)

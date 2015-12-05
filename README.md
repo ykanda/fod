@@ -4,12 +4,72 @@ Introduction
 fod (meaning File Open Dialog) is a tool to select the directories and files interactively. 
 will output the path of the selected directories and files to standard output.
 
-__Example__
+__Usage__
 
     cd `fod`
     mv `fod`
     git add `fod`
-    git add `fod -m` # comming soon
+    git add `fod -m`
+
+Exmaple: Directory select mode
+--------
+
+For example, If you run `fod` on this project repository working copy.
+If you are not given the option, it will be a mode in which you can select one of the directory.
+It will see the display as follows:
+
+		>
+		[d]   ../
+		[d]   /Users/kandayasu/.go/src/github.com/ykanda/fod/.git
+		[d]   /Users/kandayasu/.go/src/github.com/ykanda/fod/_vendor
+		[d]   /Users/kandayasu/.go/src/github.com/ykanda/fod/pkg-config-files
+
+Items that focus is highlighted. 
+You can change the items that you have focus in the up and down arrow keys.
+
+Mark Item
+--------
+
+When you press Ctrl + S, it will be marked by the selected item.
+To the marked item is displayed '*'.
+
+		>
+		[d]   ../
+		[d] * /Users/kandayasu/.go/src/github.com/ykanda/fod/.git
+		[d]   /Users/kandayasu/.go/src/github.com/ykanda/fod/_vendor
+		[d]   /Users/kandayasu/.go/src/github.com/ykanda/fod/pkg-config-files
+
+If you mark the other items, the mark of the current item is excluded.
+If you want to select multiple items at the same time, use the `--multiple` option.
+
+Exit and output selected item to STDIO
+--------
+
+When you press Ctrl + O, and then exit the selection.
+The marked items are displayed in the standard output.
+
+Change directory
+--------
+
+If you see with the left side of the list of items '[d]', that item is a directory.
+In the case of the file is displayed as '[f]'.
+
+When you press Enter in a state of focus item is a directory, you can change the directory
+For example, if you press Enter in a state of focus the .git directory, it will be displayed as follows:
+
+		>
+		[d]   ../
+		[d]   /Users/kandayasu/.go/src/github.com/ykanda/fod/branches
+		[d]   /Users/kandayasu/.go/src/github.com/ykanda/fod/hooks  
+		[d]   /Users/kandayasu/.go/src/github.com/ykanda/fod/info            
+		[d]   /Users/kandayasu/.go/src/github.com/ykanda/fod/logs
+		[d]   /Users/kandayasu/.go/src/github.com/ykanda/fod/objects
+		[d]   /Users/kandayasu/.go/src/github.com/ykanda/fod/refs
+
+Name filter
+--------
+
+__TODO__
 
 
 Options and arguments
@@ -19,7 +79,7 @@ Options and arguments
 | ------------ | --------------------------------------- |
 | -f           | file select mode                        |
 | -d (default) | directory select mode                   |
-| -m           | multiple selection mode (comming soon)  |
+| -m           | multiple selection mode                 |
 
 Install
 ================
@@ -37,6 +97,7 @@ Key Bindings
 | Arrow Down   | move cursor down                 |
 | Arrow Left   | move parent directory            |
 | Arrow Right  | move sub directory               |
+| Ctrl + S     | toggle marked / unmarked         |
 | Ctrl + H     | toggle dotfile filter            |
 | Ctrl + O     | OK, exit and output selcted item |
 | Ctrl + C     | cancel and exit, no output       |
@@ -58,6 +119,7 @@ Dependencies
 
 * [github.com/k0kubun/pp](https://github.com/k0kubun/pp)
 * [github.com/nsf/termbox-go](https://github.com/nsf/termbox-go)
+* [github.com/mitchellh/panicwrap](github.com/mitchellh/panicwrap)
 
 
 LICENSE

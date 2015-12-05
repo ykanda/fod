@@ -4,15 +4,17 @@ import (
 	"fmt"
 	"io/ioutil"
 	"os"
+	"path/filepath"
 )
 
 type Entry struct {
-	Path string
-	Type string
+	Path   string
+	Type   string
+	Marked bool
 }
 
 // alias to wditems
-func Entries(path string) []Entry {
+func Entries(path string) []*Entry {
 
 	// list directory entries
 	readdir, err := ioutil.ReadDir(path)
@@ -21,22 +23,30 @@ func Entries(path string) []Entry {
 		os.Exit(1)
 	}
 
-	entries := []Entry{}
-	entries = append(entries, Entry{
+	entries := []*Entry{}
+	entries = append(entries, &Entry{
 		Path: "../",
 		Type: FS_TYPE_DIR,
 	})
 	for _, fi := range readdir {
+		var abs string = ""
+		if _abs, err := filepath.Abs(fi.Name()); err == nil {
+			abs = _abs
+		} else {
+			continue
+		}
 		switch fi.IsDir() {
 		case true:
-			entries = append(entries, Entry{
-				Path: fi.Name(),
-				Type: FS_TYPE_DIR,
+			entries = append(entries, &Entry{
+				Path:   abs,
+				Type:   FS_TYPE_DIR,
+				Marked: false,
 			})
 		case false:
-			entries = append(entries, Entry{
-				Path: fi.Name(),
-				Type: FS_TYPE_FILE,
+			entries = append(entries, &Entry{
+				Path:   abs,
+				Type:   FS_TYPE_FILE,
+				Marked: false,
 			})
 		}
 	}

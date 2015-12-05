@@ -4,6 +4,7 @@ import (
 	"errors"
 	"os"
 	"path/filepath"
+	"strings"
 )
 import (
 	"github.com/nsf/termbox-go"
@@ -11,7 +12,8 @@ import (
 
 type Selector interface {
 	Result() (string, ResultCode)
-	Choice() bool
+	Mark()
+	Decide() bool
 	Cancel()
 
 	ChangeDirectoryToCurrentItem()
@@ -29,11 +31,11 @@ type SelectorFramework struct {
 }
 
 // create new SelectorFramework
-func NewSelectorFramework(mode Mode) (*SelectorFramework, error) {
+func NewSelectorFramework(mode Mode, multi bool) (*SelectorFramework, error) {
 
 	// create concrete selector
 	var selector Selector
-	if _selector, err := NewSelector(mode); err == nil {
+	if _selector, err := NewSelector(mode, multi); err == nil {
 		selector = _selector
 	} else {
 		return nil, err
@@ -53,7 +55,7 @@ Loop:
 		Draw(interface{}(self.concrete).(DrawContext))
 
 		event := termbox.PollEvent()
-		DebugLog(event)
+		/* DebugLog(event) */
 
 		// [todo] - key map config
 		switch {
@@ -70,17 +72,26 @@ Loop:
 
 		// filename filter
 		case event.Ch >= 0x20 && event.Ch <= 0x7E:
+			fallthrough
+		case event.Type == termbox.EventKey && event.Key == termbox.KeySpace:
 			FilenameFilterSingleton().AddCharacter(event.Ch)
 			self.concrete.Refresh()
-		case event.Type == termbox.EventKey && event.Key == 0x007F:
+
+		case event.Type == termbox.EventKey && event.Key == termbox.KeyBackspace:
+			fallthrough
+		case event.Type == termbox.EventKey && event.Key == termbox.KeyBackspace2:
 			FilenameFilterSingleton().DelCharacter()
 			self.concrete.Refresh()
 
-		// chose
+		// done
 		case event.Type == termbox.EventKey && event.Key == termbox.KeyCtrlO:
-			if self.concrete.Choice() {
+			if self.concrete.Decide() {
 				break Loop
 			}
+
+		// mark an item
+		case event.Type == termbox.EventKey && event.Key == termbox.KeyCtrlS:
+			self.concrete.Mark()
 
 		// toggle dotfile-filter
 		case event.Type == termbox.EventKey && event.Key == termbox.KeyCtrlH:
@@ -107,12 +118,14 @@ func (self *SelectorFramework) Result() (string, ResultCode) {
 // ----------------------------------------------------------------------------
 
 // create a new selector
-func NewSelector(mode Mode) (selector Selector, err error) {
+func NewSelector(mode Mode, multi bool) (selector Selector, err error) {
 	switch mode {
 	case MODE_FILE:
 		selector = &FileSelector{
 			&SelectorCommon{
+				Multi:      multi,
 				CurrentDir: "./",
+				marked:     []string{},
 				result:     "",
 				resultCode: RESULT_NONE,
 				Cursor:     0,
@@ -126,7 +139,9 @@ func NewSelector(mode Mode) (selector Selector, err error) {
 	case MODE_DIRECTORY:
 		selector = &DirectorySelector{
 			&SelectorCommon{
+				Multi:      multi,
 				CurrentDir: "./",
+				marked:     []string{},
 				result:     "",
 				resultCode: RESULT_NONE,
 				Cursor:     0,
@@ -146,10 +161,12 @@ func NewSelector(mode Mode) (selector Selector, err error) {
 //-----------------------------------------------------------------------------
 
 type SelectorCommon struct {
+	Multi      bool
 	CurrentDir string
 	Cursor     int
-	Entries    []Entry
+	Entries    []*Entry
 	Filters    []Filter
+	marked     []string
 	result     string
 	resultCode ResultCode
 }
@@ -182,8 +199,7 @@ func (self *SelectorCommon) Refresh() {
 // get focused item (absolute) path
 func (self *SelectorCommon) CurrentItem() (string, error) {
 	entries := self.GetEntries()
-	path := self.CurrentDir + "/" + entries[self.Cursor].Path
-	return filepath.Abs(path)
+	return entries[self.Cursor].Path, nil
 }
 
 // get focused item type (file or directory)
@@ -197,7 +213,6 @@ func (self *SelectorCommon) CurrentItemType(fsType string) (is bool) {
 	}
 
 	if fi, err := os.Stat(path); err == nil {
-		DebugLog(fi)
 		switch {
 		case (FS_TYPE_DIR == fsType) && (fi.IsDir() == true):
 			is = true
@@ -253,11 +268,12 @@ func (self *SelectorCommon) Result() (result string, resultCode ResultCode) {
 }
 
 // entries
-func (self *SelectorCommon) GetEntries() []Entry {
+func (self *SelectorCommon) GetEntries() []*Entry {
 	entries := self.Entries
 	for _, f := range self.Filters {
 		entries = f.Filter(entries)
 	}
+	DebugLog(entries)
 	return entries
 }
 
@@ -282,4 +298,80 @@ func (self *SelectorCommon) GetPwd() string {
 // get filter string
 func (self *SelectorCommon) GetFilterString() string {
 	return FilenameFilterSingleton().GetFilterString()
+}
+
+func (self *SelectorCommon) MarkItem() {
+	var path string = ""
+	if _path, err := self.CurrentItem(); err != nil {
+		return
+	} else {
+		path = _path
+	}
+	switch self.Multi {
+	case true:
+		self.ToggleItem(path, self.GetCurrentItemIndex())
+	case false:
+		self.SetItem(path, self.GetCurrentItemIndex())
+	}
+	DebugLog(self.marked)
+}
+
+func filter(a []string, f func(string) bool) []string {
+	n := []string{}
+	for _, x := range a {
+		if f(x) {
+			n = append(n, x)
+		}
+	}
+	return n
+}
+
+func contains(a []string, f func(string) bool) []int {
+	var n = []int{}
+	for i, x := range a {
+		if f(x) {
+			n = append(n, i)
+		}
+	}
+	return n
+}
+
+func (self *SelectorCommon) ToggleItem(path string, index int) {
+	exists := 0 < len(
+		contains(self.marked, func(elem string) bool {
+			return (elem == path)
+		}))
+
+	entries := self.GetEntries()
+	if exists {
+		entries[index].Marked = false
+		self.marked = filter(self.marked, func(elem string) bool {
+			return (elem != path)
+		})
+	} else {
+		entries[index].Marked = true
+		self.marked = append(self.marked, path)
+	}
+}
+
+func (self *SelectorCommon) SetItem(path string, index int) {
+	for i, _ := range self.Entries {
+		self.Entries[i].Marked = false
+	}
+	entries := self.GetEntries()
+	entries[index].Marked = true
+	self.marked = []string{path}
+	DebugLog(self.Entries)
+}
+
+func (self *SelectorCommon) Decide() (selected bool) {
+	if len(self.marked) > 0 {
+		selected = true
+		self.result = strings.Join(self.marked, " ")
+		self.resultCode = RESULT_OK
+	} else {
+		self.result = ""
+		self.resultCode = RESULT_CANCEL
+	}
+	return selected
 }
