@@ -55,7 +55,7 @@ Loop:
 		Draw(interface{}(self.concrete).(DrawContext))
 
 		event := termbox.PollEvent()
-		/* DebugLog(event) */
+		// logger.Printf("%#v\n", event)
 
 		// [todo] - key map config
 		switch {
@@ -208,8 +208,6 @@ func (self *SelectorCommon) CurrentItemType(fsType string) (is bool) {
 	var path string = ""
 	if _path, err := self.CurrentItem(); err == nil {
 		path = _path
-	} else {
-		DebugLog(err)
 	}
 
 	if fi, err := os.Stat(path); err == nil {
@@ -220,7 +218,7 @@ func (self *SelectorCommon) CurrentItemType(fsType string) (is bool) {
 			is = true
 		}
 	} else {
-		DebugLog(err)
+		logger.Println(err)
 	}
 	return
 }
@@ -241,8 +239,6 @@ func (self *SelectorCommon) ChangeDirectory(path string) {
 		self.Cursor = 0
 		self.Entries = Entries(self.CurrentDir)
 	}
-
-	DebugLog(self)
 }
 
 // change directory up
@@ -253,11 +249,11 @@ func (self *SelectorCommon) ChangeDirectoryUp() {
 // change current dir
 func (self *SelectorCommon) ChangeDirectoryToCurrentItem() {
 	if self.CurrentItemType(FS_TYPE_DIR) == false {
-		DebugLog("current item is not directory")
+		logger.Println("current item is not directory")
 		return
 	}
 	if targetDir, err := self.CurrentItem(); err == nil {
-		DebugLog(err)
+		logger.Printf("%s\n", err)
 		self.ChangeDirectory(targetDir)
 	}
 }
@@ -273,7 +269,6 @@ func (self *SelectorCommon) GetEntries() []*Entry {
 	for _, f := range self.Filters {
 		entries = f.Filter(entries)
 	}
-	DebugLog(entries)
 	return entries
 }
 
@@ -313,7 +308,7 @@ func (self *SelectorCommon) MarkItem() {
 	case false:
 		self.SetItem(path, self.GetCurrentItemIndex())
 	}
-	DebugLog(self.marked)
+	logger.Printf("%#v\n", self.marked)
 }
 
 func filter(a []string, f func(string) bool) []string {
@@ -361,7 +356,7 @@ func (self *SelectorCommon) SetItem(path string, index int) {
 	entries := self.GetEntries()
 	entries[index].Marked = true
 	self.marked = []string{path}
-	DebugLog(self.Entries)
+	logger.Printf("%#v\n", self.Entries)
 }
 
 func (self *SelectorCommon) Decide() (selected bool) {

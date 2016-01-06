@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"io/ioutil"
 	"os"
 	"path/filepath"
@@ -19,7 +18,6 @@ func Entries(path string) []*Entry {
 	// list directory entries
 	readdir, err := ioutil.ReadDir(path)
 	if nil != err {
-		fmt.Fprintln(os.Stderr, err)
 		os.Exit(1)
 	}
 
@@ -28,9 +26,10 @@ func Entries(path string) []*Entry {
 		Path: "../",
 		Type: FS_TYPE_DIR,
 	})
+
 	for _, fi := range readdir {
 		var abs string = ""
-		if _abs, err := filepath.Abs(fi.Name()); err == nil {
+		if _abs, err := filepath.Abs(path + "/" + fi.Name()); err == nil { // [todo] - FileInfo を Entry に含める
 			abs = _abs
 		} else {
 			continue

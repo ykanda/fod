@@ -43,7 +43,6 @@ func marked(m bool) string {
 func drawEntries(dc DrawContext) {
 
 	entries := dc.GetEntries()
-	DebugLog(entries)
 	currentIndex := dc.GetCurrentItemIndex()
 
 	_, h := termbox.Size()

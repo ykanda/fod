@@ -1,12 +1,14 @@
 package main
 
 import (
-	"io/ioutil"
+	"log"
 	"os"
-	"runtime"
 )
 
 import "github.com/k0kubun/pp"
+
+var logger *log.Logger = nil
+var logfile *os.File = nil
 
 func InitDebug() {
 	if os.Getenv("FOD_ENABLE_DEBUG") != "" {
@@ -25,23 +27,22 @@ func InitDebug() {
 			ObjectLength:    pp.NoColor,
 		}
 		pp.SetColorScheme(scheme)
+
+		// open log file
+		if _logfile, _err := os.Create("./fod.log"); _err != nil {
+			panic(_err)
+		} else {
+			logfile = _logfile
+		}
+		logger = log.New(logfile, "fod: ", log.Lshortfile)
+		if logger == nil {
+		}
 	}
 }
 
 func CloseDebug() {
-	if os.Getenv("FOD_ENABLE_DEBUG") != "" {
-	}
-}
-
-func DebugLog(args ...interface{}) {
-	if os.Getenv("FOD_ENABLE_DEBUG") != "" {
-		_, file, line, _ := runtime.Caller(1)
-		output := pp.Sprintf(
-			"%s line %s\n%v\n",
-			file,
-			line,
-			args,
-		)
-		ioutil.WriteFile("./fod.log", []byte(output), os.ModePerm)
+	if logfile != nil {
+		logfile.Close()
+		logfile = nil
 	}
 }

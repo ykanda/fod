@@ -83,7 +83,7 @@ func doMain(context *cli.Context) {
 
 	// get working directory
 	base := appContext.String("base")
-	DebugLog(base)
+	logger.Printf("%#v\n", base)
 
 	// create selector
 	var selector *SelectorFramework
