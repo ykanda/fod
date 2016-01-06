@@ -10,6 +10,21 @@ import "github.com/k0kubun/pp"
 
 func InitDebug() {
 	if os.Getenv("FOD_ENABLE_DEBUG") != "" {
+		scheme := pp.ColorScheme{
+			Bool:            pp.NoColor,
+			Integer:         pp.NoColor,
+			Float:           pp.NoColor,
+			String:          pp.NoColor,
+			StringQuotation: pp.NoColor,
+			EscapedChar:     pp.NoColor,
+			FieldName:       pp.NoColor,
+			PointerAdress:   pp.NoColor,
+			Nil:             pp.NoColor,
+			Time:            pp.NoColor,
+			StructName:      pp.NoColor,
+			ObjectLength:    pp.NoColor,
+		}
+		pp.SetColorScheme(scheme)
 	}
 }
 
@@ -27,6 +42,6 @@ func DebugLog(args ...interface{}) {
 			line,
 			args,
 		)
-		ioutil.WriteFile("/tmp/vcd.log", []byte(output), os.ModePerm)
+		ioutil.WriteFile("./fod.log", []byte(output), os.ModePerm)
 	}
 }

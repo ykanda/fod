@@ -1,6 +1,7 @@
 _vendor
 fod
 crash_*.log
+fod.log
 .watsonrc
 
 
