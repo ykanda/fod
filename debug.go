@@ -3,12 +3,28 @@ package main
 import (
 	"log"
 	"os"
+	"runtime"
 )
 
 import "github.com/k0kubun/pp"
 
 var logger *log.Logger = nil
 var logfile *os.File = nil
+
+func nullDevice() (*os.File, error) {
+	switch runtime.GOOS {
+	case "windows":
+		return os.Create("nul")
+	case "darwin":
+		fallthrough
+	case "linux":
+		fallthrough
+	case "freebsd":
+		fallthrough
+	default:
+		return os.Create("/dev/null")
+	}
+}
 
 func InitDebug() {
 	if os.Getenv("FOD_ENABLE_DEBUG") != "" {
@@ -34,9 +50,16 @@ func InitDebug() {
 		} else {
 			logfile = _logfile
 		}
-		logger = log.New(logfile, "fod: ", log.Lshortfile)
-		if logger == nil {
+	} else {
+		// open log file
+		if _logfile, _err := nullDevice(); _err != nil {
+			panic(_err)
+		} else {
+			logfile = _logfile
 		}
+	}
+	logger = log.New(logfile, "fod: ", log.Lshortfile)
+	if logger == nil {
 	}
 }
 
