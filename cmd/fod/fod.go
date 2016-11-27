@@ -10,12 +10,11 @@ import (
 	"runtime"
 	"sync"
 	"time"
-)
 
-import (
 	"github.com/codegangsta/cli"
 	"github.com/mitchellh/panicwrap"
 	"github.com/nsf/termbox-go"
+	"github.com/ykanda/fod"
 )
 
 // flags
@@ -50,17 +49,17 @@ func main() {
 		exitStatus = _exitStatus
 	}
 
-	InitDebug()
+	fod.InitDebug()
 	app := cli.NewApp()
 	app.Name = "vcd"
-	app.Version = Version()
+	app.Version = fod.Version()
 	app.Usage = "interactive file/directory selector"
 	app.Author = "Yasuhiro KANDA"
 	app.Email = "yasuhiro.kanda@gmail.com"
 	app.Action = doMain
 	app.Flags = Flags
 	app.Run(os.Args)
-	CloseDebug()
+	fod.CloseDebug()
 
 	if os.Getenv("FOD_ENABLE_PANIC_LOG") != "" {
 		if exitStatus > 0 {
@@ -79,15 +78,14 @@ func panicHandler(output string) {
 func doMain(context *cli.Context) {
 
 	// extends cli.Context
-	var appContext *AppContext = &AppContext{context}
+	var appContext *fod.AppContext = &fod.AppContext{context}
 
 	// get working directory
 	base := appContext.String("base")
-	logger.Printf("%#v\n", base)
 
 	// create selector
-	var selector *SelectorFramework
-	if _selector, err := NewSelectorFramework(appContext.Mode(), appContext.Multi()); err == nil {
+	var selector *fod.SelectorFramework
+	if _selector, err := fod.NewSelectorFramework(appContext.Mode(), appContext.Multi()); err == nil {
 		selector = _selector
 	} else {
 		fmt.Fprintln(os.Stderr, err)
@@ -111,7 +109,7 @@ func doMain(context *cli.Context) {
 	wg.Wait()
 	termbox.Close()
 
-	if result, resultCode := selector.Result(); resultCode == RESULT_OK {
+	if result, resultCode := selector.Result(); resultCode == fod.RESULT_OK {
 		fmt.Fprintln(os.Stdout, result)
 	}
 }

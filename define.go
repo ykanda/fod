@@ -1,4 +1,4 @@
-package main
+package fod
 
 // function mode
 type Mode int

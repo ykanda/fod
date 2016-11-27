@@ -1,4 +1,4 @@
-package main
+package fod
 
 // directory filter
 type DirectoryFilter struct {

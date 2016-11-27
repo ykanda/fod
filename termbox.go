@@ -1,4 +1,4 @@
-package main
+package fod
 
 import "fmt"
 import "github.com/nsf/termbox-go"

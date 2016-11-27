@@ -1,4 +1,4 @@
-package main
+package fod
 
 type Filter interface {
 	// filter an entry
