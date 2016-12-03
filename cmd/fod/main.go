@@ -17,6 +17,21 @@ import (
 	"github.com/ykanda/fod"
 )
 
+var (
+	name     string
+	version  string
+	revision string
+)
+
+func versionStr() string {
+	return fmt.Sprintf(
+		"%s version %s revision %s",
+		name,
+		version,
+		revision,
+	)
+}
+
 // flags
 var Flags = []cli.Flag{
 	cli.BoolFlag{
@@ -40,8 +55,15 @@ var Flags = []cli.Flag{
 
 // entry point
 func main() {
+
 	cpus := runtime.NumCPU()
 	runtime.GOMAXPROCS(cpus)
+
+	os.Exit(run(os.Args))
+
+}
+
+func run(args []string) int {
 
 	var exitStatus int
 	if os.Getenv("FOD_ENABLE_PANIC_LOG") != "" {
@@ -51,8 +73,8 @@ func main() {
 
 	fod.InitDebug()
 	app := cli.NewApp()
-	app.Name = "vcd"
-	app.Version = fod.Version()
+	app.Name = name
+	app.Version = versionStr()
 	app.Usage = "interactive file/directory selector"
 	app.Author = "Yasuhiro KANDA"
 	app.Email = "yasuhiro.kanda@gmail.com"
@@ -66,6 +88,7 @@ func main() {
 			os.Exit(exitStatus)
 		}
 	}
+	return 0
 }
 
 func panicHandler(output string) {
