@@ -9,10 +9,8 @@ import (
 	"os"
 	"runtime"
 	"sync"
-	"time"
 
 	"github.com/codegangsta/cli"
-	"github.com/mitchellh/panicwrap"
 	"github.com/nsf/termbox-go"
 	"github.com/ykanda/fod"
 )
@@ -38,7 +36,7 @@ const (
 	ExitCodeError     = 1
 )
 
-// flags
+// Flags : options for urfave/cli
 var Flags = []cli.Flag{
 	cli.BoolFlag{
 		Name:  "directory, d",
@@ -70,43 +68,29 @@ func main() {
 
 func run(args []string) int {
 
-	var exitStatus int
-	if os.Getenv("FOD_ENABLE_PANIC_LOG") != "" {
-		_exitStatus, _ := panicwrap.BasicWrap(panicHandler)
-		exitStatus = _exitStatus
-	}
-
 	fod.InitDebug()
+	defer fod.CloseDebug()
+
 	app := cli.NewApp()
 	app.Name = name
 	app.Version = versionStr()
-	app.Usage = "interactive file/directory selector"
+	app.Usage = "file open dialog"
 	app.Author = "Yasuhiro KANDA"
 	app.Email = "yasuhiro.kanda@gmail.com"
-	app.Action = doMain
+	app.Action = action
 	app.Flags = Flags
-	app.Run(args)
-	fod.CloseDebug()
-
-	if os.Getenv("FOD_ENABLE_PANIC_LOG") != "" {
-		if exitStatus > 0 {
-			os.Exit(exitStatus)
-		}
+	if err := app.Run(args); err != nil {
+		return ExitCodeError
 	}
+
 	return ExitCodeOK
 }
 
-func panicHandler(output string) {
-	f, _ := os.Create(fmt.Sprintf("crash_%d.log", time.Now().Unix()))
-	fmt.Fprintf(f, "The child panicked!\n\n%s", output)
-	os.Exit(1)
-}
-
 // main function
-func doMain(context *cli.Context) {
+func action(context *cli.Context) error {
 
 	// extends cli.Context
-	var appContext *fod.AppContext = &fod.AppContext{context}
+	var appContext = &fod.AppContext{context}
 
 	// get working directory
 	base := appContext.String("base")
@@ -116,15 +100,13 @@ func doMain(context *cli.Context) {
 	if _selector, err := fod.NewSelectorFramework(appContext.Mode(), appContext.Multi()); err == nil {
 		selector = _selector
 	} else {
-		fmt.Fprintln(os.Stderr, err)
-		return
+		return err
 	}
 
 	if err := termbox.Init(); err != nil {
-		fmt.Fprintln(os.Stderr, err)
-	} else {
-		termbox.SetInputMode(termbox.InputEsc)
+		return err
 	}
+	termbox.SetInputMode(termbox.InputEsc)
 
 	// select loop
 	var wg sync.WaitGroup
@@ -140,4 +122,5 @@ func doMain(context *cli.Context) {
 	if result, resultCode := selector.Result(); resultCode == fod.RESULT_OK {
 		fmt.Fprintln(os.Stdout, result)
 	}
+	return nil
 }
