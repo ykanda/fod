@@ -32,6 +32,12 @@ func versionStr() string {
 	)
 }
 
+// ExitCode
+const (
+	ExitCodeOK    int = 0
+	ExitCodeError     = 1
+)
+
 // flags
 var Flags = []cli.Flag{
 	cli.BoolFlag{
@@ -60,7 +66,6 @@ func main() {
 	runtime.GOMAXPROCS(cpus)
 
 	os.Exit(run(os.Args))
-
 }
 
 func run(args []string) int {
@@ -80,7 +85,7 @@ func run(args []string) int {
 	app.Email = "yasuhiro.kanda@gmail.com"
 	app.Action = doMain
 	app.Flags = Flags
-	app.Run(os.Args)
+	app.Run(args)
 	fod.CloseDebug()
 
 	if os.Getenv("FOD_ENABLE_PANIC_LOG") != "" {
@@ -88,7 +93,7 @@ func run(args []string) int {
 			os.Exit(exitStatus)
 		}
 	}
-	return 0
+	return ExitCodeOK
 }
 
 func panicHandler(output string) {
