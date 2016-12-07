@@ -28,8 +28,8 @@ func Entries(path string) []*Entry {
 	})
 
 	for _, fi := range readdir {
-		var abs string = ""
-		if _abs, err := filepath.Abs(path + "/" + fi.Name()); err == nil { // [todo] - FileInfo を Entry に含める
+		var abs string = "" // [todo] - FileInfo を Entry に含める
+		if _abs, err := filepath.Abs(fi.Name()); err == nil {
 			abs = _abs
 		} else {
 			continue

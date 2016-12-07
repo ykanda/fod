@@ -10,8 +10,8 @@ import (
 	"runtime"
 	"sync"
 
-	"github.com/codegangsta/cli"
 	"github.com/nsf/termbox-go"
+	"github.com/urfave/cli"
 	"github.com/ykanda/fod"
 )
 
@@ -36,27 +36,6 @@ const (
 	ExitCodeError     = 1
 )
 
-// Flags : options for urfave/cli
-var Flags = []cli.Flag{
-	cli.BoolFlag{
-		Name:  "directory, d",
-		Usage: "directory selecting mode",
-	},
-	cli.BoolFlag{
-		Name:  "file, f",
-		Usage: "file selecting mode",
-	},
-	cli.StringFlag{
-		Name:  "base, b",
-		Value: "./",
-		Usage: "base dir",
-	},
-	cli.BoolFlag{
-		Name:  "multi, m",
-		Usage: "multiple select mode",
-	},
-}
-
 // entry point
 func main() {
 
@@ -71,6 +50,10 @@ func run(args []string) int {
 	fod.InitDebug()
 	defer fod.CloseDebug()
 
+	flags, err := flags()
+	if err != nil {
+		return ExitCodeError
+	}
 	app := cli.NewApp()
 	app.Name = name
 	app.Version = versionStr()
@@ -78,7 +61,7 @@ func run(args []string) int {
 	app.Author = "Yasuhiro KANDA"
 	app.Email = "yasuhiro.kanda@gmail.com"
 	app.Action = action
-	app.Flags = Flags
+	app.Flags = flags
 	if err := app.Run(args); err != nil {
 		return ExitCodeError
 	}
@@ -123,4 +106,34 @@ func action(context *cli.Context) error {
 		fmt.Fprintln(os.Stdout, result)
 	}
 	return nil
+}
+
+func flags() ([]cli.Flag, error) {
+
+	dir, err := os.Getwd()
+	if err != nil {
+		return nil, err
+	}
+
+	// Flags : options for urfave/cli
+	flags := []cli.Flag{
+		cli.BoolFlag{
+			Name:  "directory, d",
+			Usage: "directory selecting mode",
+		},
+		cli.BoolFlag{
+			Name:  "file, f",
+			Usage: "file selecting mode",
+		},
+		cli.StringFlag{
+			Name:  "base, b",
+			Value: dir,
+			Usage: "base dir",
+		},
+		cli.BoolFlag{
+			Name:  "multi, m",
+			Usage: "multiple select mode",
+		},
+	}
+	return flags, nil
 }

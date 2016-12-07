@@ -18,7 +18,7 @@ type Selector interface {
 
 	ChangeDirectoryToCurrentItem()
 	ChangeDirectoryUp()
-	ChangeDirectory(path string)
+	ChangeDirectory(path string) error
 
 	MoveCursorUp()
 	MoveCursorDown()
@@ -119,12 +119,18 @@ func (self *SelectorFramework) Result() (string, ResultCode) {
 
 // create a new selector
 func NewSelector(mode Mode, multi bool) (selector Selector, err error) {
+
+	dir, err := os.Getwd()
+	if err != nil {
+		return nil, err
+	}
+
 	switch mode {
 	case MODE_FILE:
 		selector = &FileSelector{
 			&SelectorCommon{
 				Multi:      multi,
-				CurrentDir: "./",
+				CurrentDir: dir,
 				marked:     []string{},
 				result:     "",
 				resultCode: RESULT_NONE,
@@ -140,7 +146,7 @@ func NewSelector(mode Mode, multi bool) (selector Selector, err error) {
 		selector = &DirectorySelector{
 			&SelectorCommon{
 				Multi:      multi,
-				CurrentDir: "./",
+				CurrentDir: dir,
 				marked:     []string{},
 				result:     "",
 				resultCode: RESULT_NONE,
@@ -229,16 +235,20 @@ func (self *SelectorCommon) CurrentDirIsRoot() bool {
 }
 
 // change current dir
-func (self *SelectorCommon) ChangeDirectory(path string) {
+func (self *SelectorCommon) ChangeDirectory(path string) error {
 	if filepath.IsAbs(path) {
 		self.CurrentDir = path
 		self.Cursor = 0
 		self.Entries = Entries(self.CurrentDir)
-	} else if abs, err := filepath.Abs(self.CurrentDir + "/" + path); err == nil {
+		return nil
+	}
+	abs, err := filepath.Abs(filepath.Join(self.CurrentDir, path))
+	if err == nil {
 		self.CurrentDir = abs
 		self.Cursor = 0
 		self.Entries = Entries(self.CurrentDir)
 	}
+	return err
 }
 
 // change directory up

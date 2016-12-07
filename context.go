@@ -1,6 +1,6 @@
 package fod
 
-import "github.com/codegangsta/cli"
+import "github.com/urfave/cli"
 
 // extends cli.Context
 type AppContext struct {
