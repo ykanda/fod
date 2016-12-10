@@ -185,9 +185,9 @@ func (self *SelectorCommon) MoveCursorUp() {
 }
 
 // move cursor down
-func (self *SelectorCommon) MoveCursorDown() {
-	if self.Cursor < (len(self.GetEntries()) - 1) {
-		self.Cursor++
+func (selector *SelectorCommon) MoveCursorDown() {
+	if selector.Cursor < (len(selector.GetEntries()) - 1) {
+		selector.Cursor++
 	}
 }
 
@@ -218,9 +218,9 @@ func (self *SelectorCommon) CurrentItemType(fsType string) (is bool) {
 
 	if fi, err := os.Stat(path); err == nil {
 		switch {
-		case (FS_TYPE_DIR == fsType) && (fi.IsDir() == true):
+		case (FsTypeDir == fsType) && (fi.IsDir() == true):
 			is = true
-		case (FS_TYPE_FILE == fsType) && (fi.IsDir() == false):
+		case (FsTypeFile == fsType) && (fi.IsDir() == false):
 			is = true
 		}
 	} else {
@@ -229,6 +229,7 @@ func (self *SelectorCommon) CurrentItemType(fsType string) (is bool) {
 	return
 }
 
+// [todo] - ターゲットとするOSごとに処理を分ける
 // current dir is root?
 func (self *SelectorCommon) CurrentDirIsRoot() bool {
 	return self.CurrentDir == "/"
@@ -258,7 +259,7 @@ func (self *SelectorCommon) ChangeDirectoryUp() {
 
 // change current dir
 func (self *SelectorCommon) ChangeDirectoryToCurrentItem() {
-	if self.CurrentItemType(FS_TYPE_DIR) == false {
+	if self.CurrentItemType(FsTypeDir) == false {
 		logger.Println("current item is not directory")
 		return
 	}

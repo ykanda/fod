@@ -16,7 +16,7 @@ func DirectoryFilterSingleton() *DirectoryFilter {
 func (self *DirectoryFilter) Filter(entries []*Entry) []*Entry {
 	temp := []*Entry{}
 	for _, entry := range entries {
-		if entry.Type == FS_TYPE_DIR {
+		if entry.Type == FsTypeDir {
 			temp = append(temp, entry)
 		}
 	}

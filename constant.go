@@ -1,7 +1,8 @@
 package fod
 
+// Entry type character
 const (
-	FS_TYPE_FILE    = "f"
-	FS_TYPE_DIR     = "d"
-	FS_TYPE_SYMLINK = "s"
+	FsTypeFile    = "f"
+	FsTypeDir     = "d"
+	FsTypeSymlink = "s"
 )

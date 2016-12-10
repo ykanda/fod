@@ -24,7 +24,7 @@ func Entries(path string) []*Entry {
 	entries := []*Entry{}
 	entries = append(entries, &Entry{
 		Path: "../",
-		Type: FS_TYPE_DIR,
+		Type: FsTypeDir,
 	})
 
 	for _, fi := range readdir {
@@ -38,13 +38,13 @@ func Entries(path string) []*Entry {
 		case true:
 			entries = append(entries, &Entry{
 				Path:   abs,
-				Type:   FS_TYPE_DIR,
+				Type:   FsTypeDir,
 				Marked: false,
 			})
 		case false:
 			entries = append(entries, &Entry{
 				Path:   abs,
-				Type:   FS_TYPE_FILE,
+				Type:   FsTypeFile,
 				Marked: false,
 			})
 		}
@@ -53,13 +53,13 @@ func Entries(path string) []*Entry {
 }
 
 // get type character
-// FS_TYPE_DIR  -> d
-// FS_TYPE_FILE -> -
+// FsTypeDir  -> d
+// FsTypeFile -> -
 func (self *Entry) TypeCharcter() (tc string) {
 	switch self.Type {
-	case FS_TYPE_DIR:
+	case FsTypeDir:
 		tc = "d"
-	case FS_TYPE_FILE:
+	case FsTypeFile:
 		tc = "-"
 	}
 	return

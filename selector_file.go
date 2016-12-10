@@ -10,7 +10,7 @@ func (self *FileSelector) GetMode() string {
 }
 
 func (self *FileSelector) Mark() {
-	if self.CurrentItemType(FS_TYPE_FILE) {
+	if self.CurrentItemType(FsTypeFile) {
 		self.MarkItem()
 	}
 }

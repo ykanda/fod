@@ -10,7 +10,7 @@ func (self *DirectorySelector) GetMode() string {
 }
 
 func (self *DirectorySelector) Mark() {
-	if self.CurrentItemType(FS_TYPE_DIR) {
+	if self.CurrentItemType(FsTypeDir) {
 		self.MarkItem()
 	}
 }
