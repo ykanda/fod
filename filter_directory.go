@@ -7,7 +7,7 @@ type DirectoryFilter struct {
 // singleton instance
 var directoryFilter *DirectoryFilter = &DirectoryFilter{}
 
-// get singleton instance
+// DirectoryFilterSingleton return singleton instance
 func DirectoryFilterSingleton() *DirectoryFilter {
 	return directoryFilter
 }

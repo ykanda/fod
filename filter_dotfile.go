@@ -36,6 +36,6 @@ func (self *DotfileFilter) Filter(entries []*Entry) (result []*Entry) {
 }
 
 // toggle enable or disable
-func (self *DotfileFilter) Toggle() {
+func (self *DotfileFilter) toggle() {
 	self.enable = !self.enable
 }

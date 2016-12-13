@@ -2,7 +2,7 @@ package fod
 
 import "github.com/urfave/cli"
 
-// extends cli.Context
+// AppContext extends cli.Context
 type AppContext struct {
 	*cli.Context
 }

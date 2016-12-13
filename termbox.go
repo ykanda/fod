@@ -26,7 +26,7 @@ type DrawContext interface {
 // draw a string
 func drawString(x int, y int, text string, fgColor termbox.Attribute, bgColor termbox.Attribute) {
 	runes := []rune(text)
-	for i := 0; i < len(runes); i += 1 {
+	for i := 0; i < len(runes); i++ {
 		termbox.SetCell(x+i, y, runes[i], fgColor, bgColor)
 	}
 }

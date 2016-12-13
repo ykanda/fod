@@ -95,7 +95,7 @@ Loop:
 
 		// toggle dotfile-filter
 		case event.Type == termbox.EventKey && event.Key == termbox.KeyCtrlH:
-			DotfileFilterSinleton().Toggle()
+			DotfileFilterSinleton().toggle()
 			self.concrete.Refresh()
 
 		// cancel and exit
@@ -177,14 +177,14 @@ type SelectorCommon struct {
 	resultCode ResultCode
 }
 
-// move cursor up
-func (self *SelectorCommon) MoveCursorUp() {
-	if self.Cursor > 0 {
-		self.Cursor--
+// MoveCursorUp move cursor up
+func (selector *SelectorCommon) MoveCursorUp() {
+	if selector.Cursor > 0 {
+		selector.Cursor--
 	}
 }
 
-// move cursor down
+// MoveCursorDown move cursor down
 func (selector *SelectorCommon) MoveCursorDown() {
 	if selector.Cursor < (len(selector.GetEntries()) - 1) {
 		selector.Cursor++
@@ -360,14 +360,14 @@ func (self *SelectorCommon) ToggleItem(path string, index int) {
 	}
 }
 
-func (self *SelectorCommon) SetItem(path string, index int) {
-	for i, _ := range self.Entries {
-		self.Entries[i].Marked = false
+func (selector *SelectorCommon) SetItem(path string, index int) {
+	for i := range selector.Entries {
+		selector.Entries[i].Marked = false
 	}
-	entries := self.GetEntries()
+	entries := selector.GetEntries()
 	entries[index].Marked = true
-	self.marked = []string{path}
-	logger.Printf("%#v\n", self.Entries)
+	selector.marked = []string{path}
+	logger.Printf("%#v\n", selector.Entries)
 }
 
 func (self *SelectorCommon) Decide() (selected bool) {
