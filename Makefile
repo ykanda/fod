@@ -18,7 +18,7 @@ setup:
 # テストを実行する
 ## Run tests
 test: deps
-	go test $$(glide novendor)
+	go test $${ARGS} $$(glide novendor)
 
 # glideを使って依存パッケージをインストールする  
 ## Install dependencies
