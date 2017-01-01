@@ -21,3 +21,4 @@ import:
   - package: github.com/nsf/termbox-go
   - package: github.com/mitchellh/panicwrap
   - package: github.com/urfave/cli
+  - package: github.com/mitchellh/go-homedir
