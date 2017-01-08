@@ -1,16 +1,16 @@
-package main
+package fod
 
-// directory selector
+// DirectorySelector : directory selector
 type DirectorySelector struct {
 	*SelectorCommon
 }
 
-func (self *DirectorySelector) GetMode() string {
+func (selector *DirectorySelector) getMode() string {
 	return "D"
 }
 
-func (self *DirectorySelector) Mark() {
-	if self.CurrentItemType(FS_TYPE_DIR) {
-		self.MarkItem()
+func (selector *DirectorySelector) mark() {
+	if selector.currentItemType(FsTypeDir) {
+		selector.markItem()
 	}
 }

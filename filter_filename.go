@@ -1,52 +1,52 @@
-package main
+package fod
 
 import (
 	"strings"
 )
 
-// file name filter
+// FilenameFilter : file name filter
 type FilenameFilter struct {
 	filterString string
 	ignoreCase   bool
 }
 
 // singleton instance
-var filenameFilter *FilenameFilter = &FilenameFilter{
+var filenameFilter = &FilenameFilter{
 	filterString: "",
 	ignoreCase:   false,
 }
 
-func (self *FilenameFilter) AddCharacter(char rune) {
-	self.filterString += string(char)
+func (filter *FilenameFilter) addCharacter(char rune) {
+	filter.filterString += string(char)
 }
 
-func (self *FilenameFilter) DelCharacter() {
-	s := self.filterString
+func (filter *FilenameFilter) delCharacter() {
+	s := filter.filterString
 	if len(s) > 0 {
-		self.filterString = s[:len(s)-1]
+		filter.filterString = s[:len(s)-1]
 	}
 }
 
 // get singleton instance
-func FilenameFilterSingleton() *FilenameFilter {
+func filenameFilterSingleton() *FilenameFilter {
 	return filenameFilter
 }
 
 // filter function
-func (self *FilenameFilter) Filter(entries []*Entry) (result []*Entry) {
-	switch self.filterString == "" {
+func (filter *FilenameFilter) filter(entries []*Entry) (result []*Entry) {
+	switch filter.filterString == "" {
 	case true:
 		result = entries
 
 	case false:
 		for _, entry := range entries {
-			for _, word := range strings.Split(self.filterString, " ") {
+			for _, word := range strings.Split(filter.filterString, " ") {
 				path := entry.Path
 				if path == "../" {
 					result = append(result, entry)
 					continue
 				}
-				if self.ignoreCase {
+				if filter.ignoreCase {
 					path = strings.ToLower(path)
 					word = strings.ToLower(word)
 				}
@@ -59,10 +59,10 @@ func (self *FilenameFilter) Filter(entries []*Entry) (result []*Entry) {
 	return
 }
 
-func (self *FilenameFilter) SetFilterString(filterString string) {
-	self.filterString = filterString
+func (filter *FilenameFilter) setFilterString(filterString string) {
+	filter.filterString = filterString
 }
 
-func (self *FilenameFilter) GetFilterString() string {
-	return self.filterString
+func (filter *FilenameFilter) getFilterString() string {
+	return filter.filterString
 }

@@ -1,6 +1,7 @@
-package main
+package fod
 
+// Filter : filter interface
 type Filter interface {
 	// filter an entry
-	Filter([]*Entry) []*Entry
+	filter([]*Entry) []*Entry
 }

@@ -1,4 +1,4 @@
-package main
+package fod
 
 import (
 	"io/ioutil"
@@ -6,6 +6,7 @@ import (
 	"path/filepath"
 )
 
+// Entry represent file|directory entry
 type Entry struct {
 	Path   string
 	Type   string
@@ -13,7 +14,7 @@ type Entry struct {
 }
 
 // alias to wditems
-func Entries(path string) []*Entry {
+func entries(path string) []*Entry {
 
 	// list directory entries
 	readdir, err := ioutil.ReadDir(path)
@@ -24,12 +25,12 @@ func Entries(path string) []*Entry {
 	entries := []*Entry{}
 	entries = append(entries, &Entry{
 		Path: "../",
-		Type: FS_TYPE_DIR,
+		Type: FsTypeDir,
 	})
 
 	for _, fi := range readdir {
-		var abs string = ""
-		if _abs, err := filepath.Abs(path + "/" + fi.Name()); err == nil { // [todo] - FileInfo を Entry に含める
+		var abs string // [todo] - FileInfo を Entry に含める
+		if _abs, err := filepath.Abs(fi.Name()); err == nil {
 			abs = _abs
 		} else {
 			continue
@@ -38,13 +39,13 @@ func Entries(path string) []*Entry {
 		case true:
 			entries = append(entries, &Entry{
 				Path:   abs,
-				Type:   FS_TYPE_DIR,
+				Type:   FsTypeDir,
 				Marked: false,
 			})
 		case false:
 			entries = append(entries, &Entry{
 				Path:   abs,
-				Type:   FS_TYPE_FILE,
+				Type:   FsTypeFile,
 				Marked: false,
 			})
 		}
@@ -53,13 +54,13 @@ func Entries(path string) []*Entry {
 }
 
 // get type character
-// FS_TYPE_DIR  -> d
-// FS_TYPE_FILE -> -
-func (self *Entry) TypeCharcter() (tc string) {
-	switch self.Type {
-	case FS_TYPE_DIR:
+// FsTypeDir  -> d
+// FsTypeFile -> -
+func (entry *Entry) typeCharcter() (tc string) {
+	switch entry.Type {
+	case FsTypeDir:
 		tc = "d"
-	case FS_TYPE_FILE:
+	case FsTypeFile:
 		tc = "-"
 	}
 	return

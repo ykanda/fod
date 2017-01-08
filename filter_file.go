@@ -1,18 +1,18 @@
-package main
+package fod
 
-// file filter
+// FileFilter : file filter
 type FileFilter struct {
 }
 
 // singleton instance
-var fileFilter *FileFilter = &FileFilter{}
+var fileFilter = &FileFilter{}
 
-// get singleton instance
-func FileFilterSingleton() *FileFilter {
+// fileFilterSingleton : get singleton instance
+func fileFilterSingleton() *FileFilter {
 	return fileFilter
 }
 
-// filter function
-func (self *FileFilter) Filter(entries []*Entry) []*Entry {
+// filter : filter function
+func (filter *FileFilter) filter(entries []*Entry) []*Entry {
 	return entries // NOP
 }

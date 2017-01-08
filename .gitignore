@@ -1,9 +1,9 @@
-_vendor
+*vendor
 fod
 crash_*.log
 fod.log
 .watsonrc
-
+.vscode
 
 ### https://raw.github.com/github/gitignore/6f8aee0564363a55db374969c03dd35895801786/GO.gitignore
 
