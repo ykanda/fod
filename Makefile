@@ -31,7 +31,7 @@ update: setup
 
 ## Lint
 lint: setup
-	go vet $$(glide novendor)
+	go vet -n -x $$(glide novendor)
 	for pkg in $$(glide novendor -x); do \
 		golint -set_exit_status $$pkg || exit $$?; \
 	done
