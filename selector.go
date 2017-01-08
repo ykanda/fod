@@ -4,7 +4,6 @@ import (
 	"errors"
 	"os"
 	"path/filepath"
-	"strings"
 )
 import (
 	"github.com/nsf/termbox-go"
@@ -15,6 +14,7 @@ type Selector interface {
 	Result() (string, ResultCode)
 
 	mark()
+	markedItem() []string
 	decide() bool
 	cancel()
 
@@ -32,8 +32,8 @@ type SelectorFramework struct {
 	concrete Selector
 }
 
-// NewSelectorFramework create a instance of new selector
-func NewSelectorFramework(mode Mode, multi bool) (*SelectorFramework, error) {
+// newSelectorFramework create a instance of new selector
+func newSelectorFramework(mode Mode, multi bool) (*SelectorFramework, error) {
 
 	// create concrete selector
 	var selector Selector
@@ -113,8 +113,12 @@ Loop:
 }
 
 // Result get result
-func (selector *SelectorFramework) Result() (string, ResultCode) {
-	return selector.concrete.Result()
+func (selector *SelectorFramework) result() ([]string, ResultCode) {
+	m := selector.concrete.markedItem()
+	if len(m) > 0 {
+		return m, ResultOK
+	}
+	return nil, ResultCancel
 }
 
 // create a new selector
@@ -368,14 +372,10 @@ func (selector *SelectorCommon) setItem(path string, index int) {
 	logger.Printf("%#v\n", selector.Entries)
 }
 
-func (selector *SelectorCommon) decide() (selected bool) {
-	if len(selector.marked) > 0 {
-		selected = true
-		selector.result = strings.Join(selector.marked, " ")
-		selector.resultCode = ResultOK
-	} else {
-		selector.result = ""
-		selector.resultCode = ResultCancel
-	}
-	return selected
+func (selector *SelectorCommon) decide() bool {
+	return len(selector.marked) > 0
+}
+
+func (selector *SelectorCommon) markedItem() []string {
+	return selector.marked
 }

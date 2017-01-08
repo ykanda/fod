@@ -1,11 +1,14 @@
 package fod
 
+import "fmt"
+
 // Mode select mode
 type Mode int
 
 // mode definition
 const (
-	ModeFile Mode = iota
+	ModeInvalid Mode = iota
+	ModeFile
 	ModeDirectory
 )
 
@@ -17,9 +20,20 @@ func (mode Mode) String() (str string) {
 	case ModeDirectory:
 		str = "directory"
 	default:
-		str = "unknown"
+		str = "invalid"
 	}
 	return
+}
+
+// StringToMode convert string to Mode value
+func StringToMode(s string) (Mode, error) {
+	switch s {
+	case "file", "f":
+		return ModeFile, nil
+	case "directory", "dir", "d":
+		return ModeDirectory, nil
+	}
+	return ModeInvalid, fmt.Errorf("unexpected mode string: %s", s)
 }
 
 // ResultCode dialog result code

@@ -5,12 +5,12 @@ package main
 // [todo] - bookmark
 
 import (
+	"errors"
 	"fmt"
 	"os"
 	"runtime"
-	"sync"
+	"strings"
 
-	"github.com/nsf/termbox-go"
 	"github.com/urfave/cli"
 	"github.com/ykanda/fod"
 )
@@ -35,6 +35,9 @@ const (
 	ExitCodeOK    int = 0
 	ExitCodeError     = 1
 )
+
+// DefaultPathSeparator default path separator
+const DefaultPathSeparator = ":"
 
 // entry point
 func main() {
@@ -72,39 +75,24 @@ func run(args []string) int {
 // main function
 func action(context *cli.Context) error {
 
-	// extends cli.Context
-	var appContext = &fod.AppContext{context}
-
-	// get working directory
-	base := appContext.String("base")
-
-	// create selector
-	var selector *fod.SelectorFramework
-	if _selector, err := fod.NewSelectorFramework(appContext.Mode(), appContext.Multi()); err == nil {
-		selector = _selector
-	} else {
+	mode, err := fod.StringToMode(context.String("mode"))
+	if err != nil {
 		return err
 	}
+	output, result := fod.Dialog(
+		fod.Option{
+			Base:  context.String("base"),
+			Multi: context.Bool("multi"),
+			Mode:  mode,
+		},
+	)
 
-	if err := termbox.Init(); err != nil {
-		return err
+	if result != fod.ResultOK {
+		return errors.New("unexpected result code")
 	}
-	termbox.SetInputMode(termbox.InputEsc)
 
-	// select loop
-	var wg sync.WaitGroup
-	wg.Add(1)
-	go func() {
-		selector.Select(base)
-		wg.Done()
-		return
-	}()
-	wg.Wait()
-	termbox.Close()
-
-	if result, resultCode := selector.Result(); resultCode == fod.ResultOK {
-		fmt.Fprintln(os.Stdout, result)
-	}
+	sep := context.String("separator")
+	fmt.Fprintln(os.Stdout, strings.Join(output, sep))
 	return nil
 }
 
@@ -117,13 +105,9 @@ func flags() ([]cli.Flag, error) {
 
 	// Flags : options for urfave/cli
 	flags := []cli.Flag{
-		cli.BoolFlag{
-			Name:  "directory, d",
-			Usage: "directory selecting mode",
-		},
-		cli.BoolFlag{
-			Name:  "file, f",
-			Usage: "file selecting mode",
+		cli.StringFlag{
+			Name:  "mode, m",
+			Value: fod.ModeFile.String(),
 		},
 		cli.StringFlag{
 			Name:  "base, b",
@@ -131,8 +115,13 @@ func flags() ([]cli.Flag, error) {
 			Usage: "base dir",
 		},
 		cli.BoolFlag{
-			Name:  "multi, m",
-			Usage: "multiple select mode",
+			Name:  "multi",
+			Usage: "multiple select flag",
+		},
+		cli.StringFlag{
+			Name:  "separator, s",
+			Usage: "path separator character (string)",
+			Value: DefaultPathSeparator,
 		},
 	}
 	return flags, nil
