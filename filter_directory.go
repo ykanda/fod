@@ -1,19 +1,19 @@
 package fod
 
-// directory filter
+// DirectoryFilter : directory filter
 type DirectoryFilter struct {
 }
 
 // singleton instance
-var directoryFilter *DirectoryFilter = &DirectoryFilter{}
+var directoryFilter = &DirectoryFilter{}
 
-// DirectoryFilterSingleton return singleton instance
-func DirectoryFilterSingleton() *DirectoryFilter {
+// directoryFilterSingleton return singleton instance
+func directoryFilterSingleton() *DirectoryFilter {
 	return directoryFilter
 }
 
-// filter function
-func (self *DirectoryFilter) Filter(entries []*Entry) []*Entry {
+// filter : filter function
+func (selector *DirectoryFilter) filter(entries []*Entry) []*Entry {
 	temp := []*Entry{}
 	for _, entry := range entries {
 		if entry.Type == FsTypeDir {

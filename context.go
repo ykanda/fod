@@ -7,20 +7,21 @@ type AppContext struct {
 	*cli.Context
 }
 
-// get mode
-func (self *AppContext) Mode() (mode Mode) {
+// Mode get mode
+func (ctx *AppContext) Mode() (mode Mode) {
 	switch {
-	case self.Bool("file"):
-		mode = MODE_FILE
-	case self.Bool("directory"):
-		mode = MODE_DIRECTORY
+	case ctx.Bool("file"):
+		mode = ModeFile
+	case ctx.Bool("directory"):
+		mode = ModeDirectory
 	default:
-		mode = MODE_DIRECTORY
+		mode = ModeDirectory
 	}
 	// DebugPrint("mode", mode)
 	return
 }
 
-func (self *AppContext) Multi() bool {
-	return self.Bool("multi")
+// Multi return multiple selection mode
+func (ctx *AppContext) Multi() bool {
+	return ctx.Bool("multi")
 }

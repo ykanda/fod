@@ -1,16 +1,16 @@
 package fod
 
-// file selector
+// FileSelector selector for file
 type FileSelector struct {
 	*SelectorCommon
 }
 
-func (self *FileSelector) GetMode() string {
+func (selector *FileSelector) getMode() string {
 	return "F"
 }
 
-func (self *FileSelector) Mark() {
-	if self.CurrentItemType(FsTypeFile) {
-		self.MarkItem()
+func (selector *FileSelector) mark() {
+	if selector.currentItemType(FsTypeFile) {
+		selector.markItem()
 	}
 }

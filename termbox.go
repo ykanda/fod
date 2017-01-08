@@ -3,6 +3,7 @@ package fod
 import "fmt"
 import "github.com/nsf/termbox-go"
 
+// DrawContext : draw context
 type DrawContext interface {
 	// get entries
 	GetEntries() []*Entry
@@ -34,9 +35,8 @@ func drawString(x int, y int, text string, fgColor termbox.Attribute, bgColor te
 func marked(m bool) string {
 	if m == true {
 		return "*"
-	} else {
-		return " "
 	}
+	return " "
 }
 
 // draw menu
@@ -59,7 +59,7 @@ func drawEntries(dc DrawContext) {
 	for index, entry := range entries[pageTop:pageEnd] {
 		line := fmt.Sprintf(
 			"[%s] %s %s",
-			entry.TypeCharcter(), marked(entry.Marked),
+			entry.typeCharcter(), marked(entry.Marked),
 			entry.Path,
 		)
 		switch index == cursorIndex {
@@ -116,7 +116,7 @@ func drawStatusLineBottom(dc DrawContext) {
 }
 
 // draw screen
-func Draw(dc DrawContext) {
+func draw(dc DrawContext) {
 	termbox.Clear(
 		termbox.ColorDefault,
 		termbox.ColorDefault,

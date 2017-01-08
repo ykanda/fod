@@ -1,20 +1,20 @@
 package fod
 
-// function mode
+// Mode select mode
 type Mode int
 
 // mode definition
 const (
-	MODE_FILE Mode = iota
-	MODE_DIRECTORY
+	ModeFile Mode = iota
+	ModeDirectory
 )
 
 // Mode to string
 func (mode Mode) String() (str string) {
 	switch mode {
-	case MODE_FILE:
+	case ModeFile:
 		str = "file"
-	case MODE_DIRECTORY:
+	case ModeDirectory:
 		str = "directory"
 	default:
 		str = "unknown"
@@ -22,12 +22,12 @@ func (mode Mode) String() (str string) {
 	return
 }
 
-// dialog result
+// ResultCode dialog result code
 type ResultCode int
 
 // dialog result
 const (
-	RESULT_NONE ResultCode = iota
-	RESULT_CANCEL
-	RESULT_OK
+	ResultNone ResultCode = iota
+	ResultCancel
+	ResultOK
 )

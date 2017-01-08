@@ -102,7 +102,7 @@ func action(context *cli.Context) error {
 	wg.Wait()
 	termbox.Close()
 
-	if result, resultCode := selector.Result(); resultCode == fod.RESULT_OK {
+	if result, resultCode := selector.Result(); resultCode == fod.ResultOK {
 		fmt.Fprintln(os.Stdout, result)
 	}
 	return nil
