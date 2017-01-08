@@ -6,10 +6,11 @@ will output the path of the selected directories and files to standard output.
 
 __Usage__
 
-    cd `fod`
-    mv `fod`
-    git add `fod`
-    git add `fod -m`
+		cd $(fod)
+		mv $(fod)
+		git add $(fod)
+		git add $(fod -m --separator=' ')
+
 
 Exmaple: Directory select mode
 --------
@@ -27,6 +28,7 @@ It will see the display as follows:
 Items that focus is highlighted. 
 You can change the items that you have focus in the up and down arrow keys.
 
+
 Mark Item
 --------
 
@@ -42,11 +44,13 @@ To the marked item is displayed '*'.
 If you mark the other items, the mark of the current item is excluded.
 If you want to select multiple items at the same time, use the `--multiple` option.
 
+
 Exit and output selected item to STDIO
 --------
 
 When you press Ctrl + O, and then exit the selection.
 The marked items are displayed in the standard output.
+
 
 Change directory
 --------
@@ -66,6 +70,7 @@ For example, if you press Enter in a state of focus the .git directory, it will 
 		[d]   /Users/kandayasu/.go/src/github.com/ykanda/fod/objects
 		[d]   /Users/kandayasu/.go/src/github.com/ykanda/fod/refs
 
+
 Name filter
 --------
 
@@ -75,16 +80,20 @@ __TODO__
 Options and arguments
 ================
 
-| **option**   | **Explaination**                        |
-| ------------ | --------------------------------------- |
-| -f           | file select mode                        |
-| -d (default) | directory select mode                   |
-| -m           | multiple selection mode                 |
+| **option**      | **Explaination**                         |
+| --------------- | ---------------------------------------- |
+| --mode, -m      | select mode (f, file, directory, dir, d) |
+| --base, -b      | base dir                                 |
+| --multi         | multiple selection mode                  |
+| --separator, -s | path separator string (use with --multi) |
+
 
 Install
 ================
 
-    go get github.com/ykanda/fod
+```
+go get github.com/ykanda/fod
+```
 
 
 Key Bindings
@@ -110,16 +119,16 @@ Development, Contributions
 
 1. Please fork repository on GitHub.
 2. Execute `go get github.com/your_id_on_github/fod`, to make working copy on your computer.
-3. Editing code.
-4. Send PR.
+3. Checkout working branch.
+4. Editing code.
+5. Send PR.
 
 
 Dependencies
 ================
 
-* [github.com/k0kubun/pp](https://github.com/k0kubun/pp)
-* [github.com/nsf/termbox-go](https://github.com/nsf/termbox-go)
-* [github.com/mitchellh/panicwrap](github.com/mitchellh/panicwrap)
+Too see glide.yaml file.
+I thank the authors of the library.
 
 
 LICENSE
@@ -136,6 +145,4 @@ TODO
 * test
 * configuable key bind
 * symlinks
-* multiple selection
-* bookmark
 * windows support
