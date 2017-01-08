@@ -6,22 +6,22 @@ import "github.com/nsf/termbox-go"
 // DrawContext : draw context
 type DrawContext interface {
 	// get entries
-	GetEntries() []*Entry
+	getEntries() []*Entry
 
 	// get current item index in entries
-	GetCurrentItemIndex() int
+	getCurrentItemIndex() int
 
 	// get number of items
-	GetTotalItems() int
+	getTotalItems() int
 
 	// get current directory path
-	GetPwd() string
+	getPwd() string
 
 	// get selector mode
-	GetMode() string
+	getMode() string
 
 	// get filter string
-	GetFilterString() string
+	getFilterString() string
 }
 
 // draw a string
@@ -42,8 +42,8 @@ func marked(m bool) string {
 // draw menu
 func drawEntries(dc DrawContext) {
 
-	entries := dc.GetEntries()
-	currentIndex := dc.GetCurrentItemIndex()
+	entries := dc.getEntries()
+	currentIndex := dc.getCurrentItemIndex()
 
 	_, h := termbox.Size()
 	linePerPage := h - 3 // 1 (top) + 2 (bottom)
@@ -80,7 +80,7 @@ func drawEntries(dc DrawContext) {
 }
 
 func drawStatusLineTop(dc DrawContext) {
-	text := fmt.Sprintf("> %s", dc.GetFilterString())
+	text := fmt.Sprintf("> %s", dc.getFilterString())
 	drawString(
 		0,
 		0, text,
@@ -98,16 +98,16 @@ func drawStatusLineBottom(dc DrawContext) {
 
 	text1 := fmt.Sprintf(
 		"select %3d of %3d items %s",
-		dc.GetCurrentItemIndex()+1,
-		dc.GetTotalItems(),
-		dc.GetPwd(),
+		dc.getCurrentItemIndex()+1,
+		dc.getTotalItems(),
+		dc.getPwd(),
 	)
 	drawString(
 		x, y1, text1,
 		termbox.ColorDefault,
 		termbox.ColorDefault,
 	)
-	text2 := fmt.Sprintf("[%s] Ctrl+(O)K / Ctrl+(C)ancel, Ctrl+(Q)uit, Esc to exit", dc.GetMode())
+	text2 := fmt.Sprintf("[%s] Ctrl+(O)K / Ctrl+(C)ancel, Ctrl+(Q)uit, Esc to exit", dc.getMode())
 	drawString(
 		x, y2, text2,
 		termbox.ColorDefault,
