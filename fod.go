@@ -11,7 +11,8 @@ func Dialog(opt Option) ([]string, ResultCode) {
 
 	// create selector
 	var selector Selector
-	if selector, err := newSelector(opt.Mode, opt.Multi); err != nil {
+	var err error
+	if selector, err = newSelector(opt.Mode, opt.Multi); err != nil {
 		return []string{}, ResultNone
 	}
 
