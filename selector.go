@@ -37,9 +37,8 @@ func newSelectorFramework(mode Mode, multi bool) (*SelectorFramework, error) {
 
 	// create concrete selector
 	var selector Selector
-	if _selector, err := newSelector(mode, multi); err == nil {
-		selector = _selector
-	} else {
+	var err error
+	if selector, err = newSelector(mode, multi); err != nil {
 		return nil, err
 	}
 
