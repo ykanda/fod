@@ -102,7 +102,7 @@ Key Bindings
 | **KEY**      | **Explaination**                 |
 | ------------ | -------------------------------- |
 | Enter        | open directory                   |
-| Arrow Up     | move cursor down                 |
+| Arrow Up     | move cursor up                   |
 | Arrow Down   | move cursor down                 |
 | Arrow Left   | move parent directory            |
 | Arrow Right  | move sub directory               |
