@@ -10,10 +10,8 @@ import (
 func Dialog(opt Option) ([]string, ResultCode) {
 
 	// create selector
-	var selector *SelectorFramework
-	if _selector, err := newSelectorFramework(opt.Mode, opt.Multi); err == nil {
-		selector = _selector
-	} else {
+	var selector Selector
+	if selector, err := newSelector(opt.Mode, opt.Multi); err != nil {
 		return []string{}, ResultNone
 	}
 
@@ -27,7 +25,7 @@ func Dialog(opt Option) ([]string, ResultCode) {
 	var wg sync.WaitGroup
 	wg.Add(1)
 	go func() {
-		selector.Select(opt.Base)
+		selector.run(opt.Base)
 		wg.Done()
 		return
 	}()
