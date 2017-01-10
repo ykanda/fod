@@ -12,6 +12,13 @@ const (
 	ModeDirectory
 )
 
+// Entry type character
+const (
+	FsTypeFile    = "f"
+	FsTypeDir     = "d"
+	FsTypeSymlink = "s"
+)
+
 // Mode to string
 func (mode Mode) String() (str string) {
 	switch mode {
