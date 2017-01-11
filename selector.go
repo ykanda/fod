@@ -13,7 +13,6 @@ type Selector interface {
 	markedItem() []string
 	decide() bool
 	cancel()
-	run(base string)
 
 	changeDirectoryToCurrentItem()
 	changeDirectoryUp()
