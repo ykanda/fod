@@ -79,7 +79,7 @@ Loop:
 
 		// mark an item
 		case event.Type == termbox.EventKey && event.Key == termbox.KeyCtrlS:
-			selector.mark()
+			selector.markItem()
 
 		// toggle dotfile-filter
 		case event.Type == termbox.EventKey && event.Key == termbox.KeyCtrlH:

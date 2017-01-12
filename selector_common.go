@@ -16,10 +16,6 @@ type SelectorCommon struct {
 	resultCode ResultCode
 }
 
-func (selector *SelectorCommon) getMode() string {
-	return "hogehoge"
-}
-
 // Result get result
 func (selector *SelectorCommon) result() ([]string, ResultCode) {
 	m := selector.markedItem()
@@ -165,7 +161,6 @@ func (selector *SelectorCommon) markItem() {
 	case false:
 		selector.setItem(path, selector.getCurrentItemIndex())
 	}
-	logger.Printf("%#v\n", selector.marked)
 }
 
 func filter(a []string, f func(string) bool) []string {

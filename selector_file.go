@@ -9,8 +9,8 @@ func (selector *FileSelector) getMode() string {
 	return "F"
 }
 
-func (selector *FileSelector) mark() {
+func (selector *FileSelector) markItem() {
 	if selector.currentItemType(FsTypeFile) {
-		selector.markItem()
+		selector.SelectorCommon.markItem()
 	}
 }

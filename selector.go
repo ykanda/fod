@@ -9,7 +9,7 @@ import (
 type Selector interface {
 	result() ([]string, ResultCode)
 
-	mark()
+	markItem()
 	markedItem() []string
 	decide() bool
 	cancel()

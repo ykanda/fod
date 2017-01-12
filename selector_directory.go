@@ -9,8 +9,8 @@ func (selector *DirectorySelector) getMode() string {
 	return "D"
 }
 
-func (selector *DirectorySelector) mark() {
+func (selector *DirectorySelector) markItem() {
 	if selector.currentItemType(FsTypeDir) {
-		selector.markItem()
+		selector.SelectorCommon.markItem()
 	}
 }
