@@ -2,6 +2,8 @@
 NAME     := fod
 VERSION  := $(shell git describe --tags --abbrev=0)
 REVISION := $(shell git rev-parse --short HEAD)
+PKGS     := $(shell go list ./...)
+GOFILES  := $(shell git ls-files '*.go')
 LDFLAGS  := \
 	-X 'main.name=$(NAME)' \
 	-X 'main.version=$(VERSION)' \
@@ -10,7 +12,6 @@ LDFLAGS  := \
 # 必要なツール類をセットアップする
 ## Setup
 setup:
-	go get github.com/Masterminds/glide
 	go get github.com/golang/lint/golint
 	go get golang.org/x/tools/cmd/goimports
 	go get github.com/Songmu/make2help/cmd/make2help
@@ -18,27 +19,27 @@ setup:
 # テストを実行する
 ## Run tests
 test: deps
-	go test $${ARGS} $$(glide novendor)
+	go test $${ARGS} $(PKGS)
 
-# glideを使って依存パッケージをインストールする  
 ## Install dependencies
 deps: setup
-	glide install
+	go mod download
  
 ## Update dependencies
 update: setup
-	glide update
+	go get -u ./...
+	go mod tidy
 
 ## Lint
 lint: setup
-	go vet -n -x $$(glide novendor)
-	for pkg in $$(glide novendor -x); do \
+	go vet $(PKGS)
+	for pkg in $(PKGS); do \
 		golint -set_exit_status $$pkg || exit $$?; \
 	done
   
 ## Format source codes
 fmt: setup
-	goimports -w $$(glide novendor -x)
+	goimports -w $(GOFILES)
 
 ## build binaries ex. make bin/myproj
 bin/%: cmd/%/main.go deps

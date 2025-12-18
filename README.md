@@ -127,7 +127,7 @@ Development, Contributions
 Dependencies
 ================
 
-Too see glide.yaml file.
+See go.mod file.
 I thank the authors of the library.
 
 
