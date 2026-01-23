@@ -12,7 +12,6 @@ LDFLAGS  := \
 # 必要なツール類をセットアップする
 ## Setup
 setup:
-	go get github.com/golang/lint/golint
 	go get golang.org/x/tools/cmd/goimports
 	go get github.com/Songmu/make2help/cmd/make2help
   
@@ -32,10 +31,7 @@ update: setup
 
 ## Lint
 lint: setup
-	go vet $(PKGS)
-	for pkg in $(PKGS); do \
-		golint -set_exit_status $$pkg || exit $$?; \
-	done
+	golangci-lint run ./...
   
 ## Format source codes
 fmt: setup
