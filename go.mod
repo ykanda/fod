@@ -1,6 +1,6 @@
 module github.com/ykanda/fod
 
-go 1.25.4
+go 1.25
 
 require (
 	github.com/nsf/termbox-go v1.1.1
