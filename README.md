@@ -92,7 +92,7 @@ Install
 ================
 
 ```
-go get github.com/ykanda/fod
+go install github.com/ykanda/fod/cmd/fod
 ```
 
 
