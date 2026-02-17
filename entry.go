@@ -1,7 +1,6 @@
 package fod
 
 import (
-	"io/ioutil"
 	"os"
 	"path/filepath"
 )
@@ -17,7 +16,7 @@ type Entry struct {
 func entries(path string) []*Entry {
 
 	// list directory entries
-	readdir, err := ioutil.ReadDir(path)
+	readdir, err := os.ReadDir(path)
 	if nil != err {
 		os.Exit(1)
 	}
@@ -28,14 +27,15 @@ func entries(path string) []*Entry {
 		Type: FsTypeDir,
 	})
 
-	for _, fi := range readdir {
-		var abs string // [todo] - FileInfo を Entry に含める
-		if _abs, err := filepath.Abs(fi.Name()); err == nil {
+	for _, de := range readdir {
+		name := de.Name()
+		var abs string
+		if _abs, err := filepath.Abs(filepath.Join(path, name)); err == nil {
 			abs = _abs
 		} else {
 			continue
 		}
-		switch fi.IsDir() {
+		switch de.IsDir() {
 		case true:
 			entries = append(entries, &Entry{
 				Path:   abs,
