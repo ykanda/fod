@@ -50,7 +50,7 @@ func (filter *FilenameFilter) filter(entries []*Entry) (result []*Entry) {
 					path = strings.ToLower(path)
 					word = strings.ToLower(word)
 				}
-				if strings.Index(path, word) != -1 {
+				if strings.Contains(path, word) {
 					result = append(result, entry)
 				}
 			}

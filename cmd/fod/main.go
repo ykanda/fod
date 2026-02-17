@@ -32,7 +32,7 @@ func versionStr() string {
 
 // ExitCode
 const (
-	ExitCodeOK    int = 0
+	ExitCodeOK    int = iota
 	ExitCodeError     = 1
 )
 

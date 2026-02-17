@@ -28,7 +28,6 @@ func Dialog(opt Option) ([]string, ResultCode) {
 	go func() {
 		runDialog(selector, opt.Base)
 		wg.Done()
-		return
 	}()
 	wg.Wait()
 	termbox.Close()

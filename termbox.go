@@ -94,8 +94,8 @@ func drawStatusLineTop(dc DrawContext) {
 
 // draw status line
 func drawStatusLineBottom(dc DrawContext) {
-	w, h := termbox.Size()
-	x := w - w
+	_, h := termbox.Size()
+	var x int
 	y1 := h - 2
 	y2 := h - 1
 
