@@ -1,7 +1,10 @@
 package fod
 
-import "fmt"
-import "github.com/nsf/termbox-go"
+import (
+	"fmt"
+
+	"github.com/nsf/termbox-go"
+)
 
 // DrawContext : draw context
 type DrawContext interface {
