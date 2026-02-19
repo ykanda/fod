@@ -59,10 +59,6 @@ func (filter *FilenameFilter) filter(entries []*Entry) (result []*Entry) {
 	return
 }
 
-func (filter *FilenameFilter) setFilterString(filterString string) {
-	filter.filterString = filterString
-}
-
 func (filter *FilenameFilter) getFilterString() string {
 	return filter.filterString
 }

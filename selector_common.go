@@ -77,12 +77,6 @@ func (selector *SelectorCommon) currentItemType(fsType string) (is bool) {
 	return
 }
 
-// [todo] - ターゲットとするOSごとに処理を分ける
-// current dir is root?
-func (selector *SelectorCommon) currentDirIsRoot() bool {
-	return selector.CurrentDir == "/"
-}
-
 // changeDirectory : change current dir
 func (selector *SelectorCommon) changeDirectory(path string) error {
 	if filepath.IsAbs(path) {
