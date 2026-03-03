@@ -12,7 +12,7 @@ import (
 	"strings"
 
 	"github.com/urfave/cli"
-	"github.com/ykanda/fod"
+	"github.com/ykanda/fod/pkg"
 )
 
 var (
