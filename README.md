@@ -149,10 +149,3 @@ LICENSE
 [The MIT License](http://opensource.org/licenses/mit-license.php)
 
 Copyright (C) 2015 Yasuhiro KANDA ([@kandayasu](https://twitter.com/kandayasu))
-
-
-TODO
-================
-
-* configuable key bind
-* windows support
