@@ -12,8 +12,8 @@ LDFLAGS  := \
 # 必要なツール類をセットアップする
 ## Setup
 setup:
-	go get golang.org/x/tools/cmd/goimports
-	go get github.com/Songmu/make2help/cmd/make2help
+	go install golang.org/x/tools/cmd/goimports
+	go install github.com/Songmu/make2help/cmd/make2help
   
 # テストを実行する
 ## Run tests
