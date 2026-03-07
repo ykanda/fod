@@ -38,7 +38,15 @@ type dialogModel struct {
 	selector Selector
 	width    int
 	height   int
+	mode     inputMode
 }
+
+type inputMode int
+
+const (
+	modeNormal inputMode = iota
+	modeFilter
+)
 
 func newDialogModel(selector Selector, base string) dialogModel {
 	selector.changeDirectory(base)
@@ -46,6 +54,7 @@ func newDialogModel(selector Selector, base string) dialogModel {
 		selector: selector,
 		width:    defaultWidth,
 		height:   defaultHeight,
+		mode:     modeNormal,
 	}
 }
 
@@ -70,45 +79,64 @@ func (m dialogModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 }
 
 func (m dialogModel) handleKey(key tea.Key) (tea.Model, tea.Cmd) {
-	switch key.String() {
-	case "enter", "right":
-		m.selector.changeDirectoryToCurrentItem()
-		return m, nil
-	case "up":
-		m.selector.moveCursorUp()
-		return m, nil
-	case "down":
-		m.selector.moveCursorDown()
-		return m, nil
-	case "left":
-		m.selector.changeDirectoryUp()
-		return m, nil
-	case "ctrl+o":
-		if m.selector.decide() {
+	switch m.mode {
+	case modeNormal:
+		switch key.String() {
+		case "ctrl+f":
+			m.mode = modeFilter
+			return m, nil
+		case "enter", "right":
+			m.selector.changeDirectoryToCurrentItem()
+			return m, nil
+		case "up":
+			m.selector.moveCursorUp()
+			return m, nil
+		case "down":
+			m.selector.moveCursorDown()
+			return m, nil
+		case "left":
+			m.selector.changeDirectoryUp()
+			return m, nil
+		case "ctrl+o":
+			if m.selector.decide() {
+				return m, tea.Quit
+			}
+			return m, nil
+		case "space":
+			m.selector.markItem()
+			return m, nil
+		case "ctrl+h":
+			dotfileFilterSinleton().toggle()
+			m.selector.refresh()
+			return m, nil
+		case "ctrl+q", "ctrl+c", "esc":
+			m.selector.cancel()
 			return m, tea.Quit
 		}
-		return m, nil
-	case "ctrl+s":
-		m.selector.markItem()
-		return m, nil
-	case "ctrl+h":
-		dotfileFilterSinleton().toggle()
-		m.selector.refresh()
-		return m, nil
-	case "ctrl+q", "ctrl+c", "esc":
-		m.selector.cancel()
-		return m, tea.Quit
-	case "backspace":
-		filenameFilterSingleton().delCharacter()
-		m.selector.refresh()
-		return m, nil
-	}
-
-	if key.Text != "" && key.Mod == 0 {
-		for _, r := range []rune(key.Text) {
-			filenameFilterSingleton().addCharacter(r)
+	case modeFilter:
+		switch key.String() {
+		case "esc":
+			m.mode = modeNormal
+			return m, nil
+		case "ctrl+q", "ctrl+c":
+			m.selector.cancel()
+			return m, tea.Quit
+		case "ctrl+o":
+			if m.selector.decide() {
+				return m, tea.Quit
+			}
+			return m, nil
+		case "backspace":
+			filenameFilterSingleton().delCharacter()
+			m.selector.refresh()
+			return m, nil
 		}
-		m.selector.refresh()
+		if key.Text != "" && key.Mod == 0 {
+			for _, r := range []rune(key.Text) {
+				filenameFilterSingleton().addCharacter(r)
+			}
+			m.selector.refresh()
+		}
 	}
 
 	return m, nil
@@ -119,12 +147,12 @@ func (m dialogModel) View() tea.View {
 	if !ok {
 		return tea.NewView("")
 	}
-	view := tea.NewView(buildView(dc, m.width, m.height))
+	view := tea.NewView(buildView(dc, m.width, m.height, m.mode))
 	view.AltScreen = true
 	return view
 }
 
-func buildView(dc DrawContext, width int, height int) string {
+func buildView(dc DrawContext, width int, height int, mode inputMode) string {
 	width, height = normalizeSize(width, height)
 
 	linePerPage := height - 3 // 1 (top) + 2 (bottom)
@@ -146,7 +174,11 @@ func buildView(dc DrawContext, width int, height int) string {
 	cursorIndex := currentIndex - pageTop
 
 	var lines []string
-	lines = append(lines, truncateLine(fmt.Sprintf("> %s", dc.getFilterString()), width))
+	filter := dc.getFilterString()
+	if mode == modeFilter {
+		filter = fmt.Sprintf("[%s]", filter)
+	}
+	lines = append(lines, truncateLine(fmt.Sprintf("> %s", filter), width))
 
 	highlight := lipgloss.NewStyle().Reverse(true).Width(width)
 	normal := lipgloss.NewStyle().Width(width)
@@ -167,7 +199,11 @@ func buildView(dc DrawContext, width int, height int) string {
 		dc.getTotalItems(),
 		dc.getPwd(),
 	)
-	status2 := fmt.Sprintf("[%s] Ctrl+(O)K / Ctrl+(C)ancel, Ctrl+(Q)uit, Esc to exit", dc.getMode())
+	modeLabel := "Normal"
+	if mode == modeFilter {
+		modeLabel = "Filter"
+	}
+	status2 := fmt.Sprintf("[%s|%s] Ctrl+(O)K / Ctrl+(C)ancel, Ctrl+(Q)uit, Esc to exit", dc.getMode(), modeLabel)
 	lines = append(lines, truncateLine(status1, width))
 	lines = append(lines, truncateLine(status2, width))
 

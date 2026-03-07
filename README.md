@@ -81,7 +81,8 @@ For example, if you press Enter in a state of focus the .git directory, it will 
 Name filter
 --------
 
-__TODO__
+Press `Ctrl + F` to enter filter mode, then type to filter by name.
+Press `Esc` to return to normal mode.
 
 
 Options and arguments
@@ -113,13 +114,15 @@ Key Bindings
 | Arrow Down   | move cursor down                 |
 | Arrow Left   | move parent directory            |
 | Arrow Right  | move sub directory               |
-| Ctrl + S     | toggle marked / unmarked         |
+| Space        | toggle marked / unmarked         |
+| Ctrl + F     | enter filter mode                |
 | Ctrl + H     | toggle dotfile filter            |
 | Ctrl + O     | OK, exit and output selcted item |
 | Ctrl + C     | cancel and exit, no output       |
 | Ctrl + Q     | cancel and exit, no output       |
 | Esc          | cancel and exit, no output       |
 
+In filter mode, `Esc` returns to normal mode.
 
 Development, Contributions
 ================
