@@ -2,6 +2,7 @@ package fod
 
 import (
 	"fmt"
+	"sort"
 	"strings"
 
 	tea "charm.land/bubbletea/v2"
@@ -174,18 +175,30 @@ func buildView(dc DrawContext, width int, height int, mode inputMode) string {
 	cursorIndex := currentIndex - pageTop
 
 	var lines []string
-	filter := dc.getFilterString()
+	filterRaw := dc.getFilterString()
+	filterDisplay := filterRaw
 	if mode == modeFilter {
-		filter = fmt.Sprintf("[%s]", filter)
+		filterDisplay = fmt.Sprintf("[%s]", filterDisplay)
 	}
-	lines = append(lines, truncateLine(fmt.Sprintf("> %s", filter), width))
+	lines = append(lines, truncateLine(fmt.Sprintf("> %s", filterDisplay), width))
 
-	highlight := lipgloss.NewStyle().Reverse(true).Width(width)
+	highlight := lipgloss.NewStyle().Underline(true).Width(width)
 	normal := lipgloss.NewStyle().Width(width)
+	matchStyle := lipgloss.NewStyle().Reverse(true)
 
 	for index, entry := range entries[pageTop:pageEnd] {
-		line := fmt.Sprintf("[%s] %s %s", entry.typeCharcter(), marked(entry.Marked), entry.Path)
-		line = truncateLine(line, width)
+		prefix := fmt.Sprintf("[%s] %s ", entry.typeCharcter(), marked(entry.Marked))
+		available := width - len([]rune(prefix))
+		var line string
+		if available <= 0 {
+			line = truncateRunes(prefix, width)
+		} else {
+			path := truncateRunes(entry.Path, available)
+			if filterRaw != "" {
+				path = highlightMatches(path, filterRaw, filenameFilterSingleton().ignoreCase, matchStyle)
+			}
+			line = prefix + path
+		}
 		if index == cursorIndex {
 			lines = append(lines, highlight.Render(line))
 		} else {
@@ -242,4 +255,109 @@ func truncateLine(text string, width int) string {
 		return text
 	}
 	return string(runes[:width])
+}
+
+func truncateRunes(text string, width int) string {
+	if width <= 0 {
+		return ""
+	}
+	runes := []rune(text)
+	if len(runes) <= width {
+		return text
+	}
+	return string(runes[:width])
+}
+
+func highlightMatches(text string, filter string, ignoreCase bool, style lipgloss.Style) string {
+	words := strings.Fields(filter)
+	if len(words) == 0 || text == "" {
+		return text
+	}
+	ranges := findMatchRanges(text, words, ignoreCase)
+	if len(ranges) == 0 {
+		return text
+	}
+
+	runes := []rune(text)
+	var b strings.Builder
+	pos := 0
+	for _, r := range ranges {
+		if r[0] > pos {
+			b.WriteString(string(runes[pos:r[0]]))
+		}
+		if r[1] > r[0] {
+			b.WriteString(style.Render(string(runes[r[0]:r[1]])))
+		}
+		pos = r[1]
+	}
+	if pos < len(runes) {
+		b.WriteString(string(runes[pos:]))
+	}
+	return b.String()
+}
+
+func findMatchRanges(text string, words []string, ignoreCase bool) [][2]int {
+	runes := []rune(text)
+	if len(runes) == 0 {
+		return nil
+	}
+	compareRunes := runes
+	if ignoreCase {
+		compareRunes = []rune(strings.ToLower(text))
+	}
+
+	var ranges [][2]int
+	for _, word := range words {
+		if word == "" {
+			continue
+		}
+		wordRunes := []rune(word)
+		if ignoreCase {
+			wordRunes = []rune(strings.ToLower(word))
+		}
+		if len(wordRunes) == 0 || len(wordRunes) > len(compareRunes) {
+			continue
+		}
+		for i := 0; i <= len(compareRunes)-len(wordRunes); i++ {
+			match := true
+			for j := 0; j < len(wordRunes); j++ {
+				if compareRunes[i+j] != wordRunes[j] {
+					match = false
+					break
+				}
+			}
+			if match {
+				ranges = append(ranges, [2]int{i, i + len(wordRunes)})
+				i += len(wordRunes) - 1
+			}
+		}
+	}
+
+	if len(ranges) == 0 {
+		return nil
+	}
+	sort.Slice(ranges, func(i, j int) bool {
+		if ranges[i][0] == ranges[j][0] {
+			return ranges[i][1] < ranges[j][1]
+		}
+		return ranges[i][0] < ranges[j][0]
+	})
+
+	merged := make([][2]int, 0, len(ranges))
+	for _, r := range ranges {
+		if len(merged) == 0 {
+			merged = append(merged, r)
+			continue
+		}
+		last := &merged[len(merged)-1]
+		if r[0] > (*last)[1] {
+			merged = append(merged, r)
+			continue
+		}
+		if r[1] > (*last)[1] {
+			(*last)[1] = r[1]
+		}
+	}
+
+	return merged
 }
