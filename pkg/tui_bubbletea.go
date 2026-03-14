@@ -40,6 +40,7 @@ type dialogModel struct {
 	width    int
 	height   int
 	mode     inputMode
+	showHelp bool
 }
 
 type inputMode int
@@ -56,6 +57,7 @@ func newDialogModel(selector Selector, base string) dialogModel {
 		width:    defaultWidth,
 		height:   defaultHeight,
 		mode:     modeNormal,
+		showHelp: false,
 	}
 }
 
@@ -80,6 +82,10 @@ func (m dialogModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 }
 
 func (m dialogModel) handleKey(key tea.Key) (tea.Model, tea.Cmd) {
+	if key.String() == "?" {
+		m.showHelp = !m.showHelp
+		return m, nil
+	}
 	switch m.mode {
 	case modeNormal:
 		switch key.String() {
@@ -148,15 +154,19 @@ func (m dialogModel) View() tea.View {
 	if !ok {
 		return tea.NewView("")
 	}
-	view := tea.NewView(buildView(dc, m.width, m.height, m.mode))
+	view := tea.NewView(buildView(dc, m.width, m.height, m.mode, m.showHelp))
 	view.AltScreen = true
 	return view
 }
 
-func buildView(dc DrawContext, width int, height int, mode inputMode) string {
+func buildView(dc DrawContext, width int, height int, mode inputMode, showHelp bool) string {
 	width, height = normalizeSize(width, height)
 
-	linePerPage := height - 3 // 1 (top) + 2 (bottom)
+	helpLinesCount := 1
+	if showHelp {
+		helpLinesCount = 3
+	}
+	linePerPage := height - (1 + 1 + helpLinesCount) // 1 (top) + 1 (status) + helpLinesCount (bottom)
 	if linePerPage < 1 {
 		linePerPage = 1
 	}
@@ -212,15 +222,27 @@ func buildView(dc DrawContext, width int, height int, mode inputMode) string {
 		dc.getTotalItems(),
 		dc.getPwd(),
 	)
-	modeLabel := "Normal"
-	if mode == modeFilter {
-		modeLabel = "Filter"
-	}
-	status2 := fmt.Sprintf("[%s|%s] Ctrl+(O)K / Ctrl+(C)ancel, Ctrl+(Q)uit, Esc to exit", dc.getMode(), modeLabel)
 	lines = append(lines, truncateLine(status1, width))
-	lines = append(lines, truncateLine(status2, width))
+	if showHelp {
+		lines = append(lines, truncateLine(formatHelpLine3("Ctrl+O", "quit, output selected items", "↑ move up"), width))
+		lines = append(lines, truncateLine(formatHelpLine3("Ctrl+Q, Esc", "quit, no output", "↓ move down"), width))
+		lines = append(lines, truncateLine(formatHelpLine3("Ctrl+F", "filter mode (Esc to exit)", "← move left"), width))
+		lines = append(lines, truncateLine(formatHelpLine3("space", "select/unselect item", "→ move right"), width))
+		lines = append(lines, truncateLine(formatHelpLine3("?", "toggle Help", ""), width))
+	} else {
+		lines = append(lines, truncateLine(fmt.Sprintf("[%s] ? help", dc.getMode()), width))
+	}
 
 	return strings.Join(lines, "\n")
+}
+
+func formatHelpLine3(left string, middle string, right string) string {
+	const leftWidth = 12
+	const middleWidth = 30
+	if right == "" {
+		return fmt.Sprintf("%-*s %s", leftWidth, left, middle)
+	}
+	return fmt.Sprintf("%-*s %-*s %s", leftWidth, left, middleWidth, middle, right)
 }
 
 func marked(m bool) string {
