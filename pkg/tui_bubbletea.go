@@ -138,7 +138,7 @@ func (m dialogModel) handleKey(key tea.Key) (tea.Model, tea.Cmd) {
 			m.selector.refresh()
 			return m, nil
 		}
-		if key.Text != "" && key.Mod == 0 {
+		if key.Text != "" && (key.Mod == 0 || key.Mod == tea.ModShift) {
 			for _, r := range []rune(key.Text) {
 				filenameFilterSingleton().addCharacter(r)
 			}
