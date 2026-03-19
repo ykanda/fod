@@ -193,6 +193,8 @@ func buildView(dc DrawContext, width int, height int, mode inputMode, showHelp b
 	lines = append(lines, truncateLine(fmt.Sprintf("> %s", filterDisplay), width))
 
 	highlight := lipgloss.NewStyle().Underline(true).Width(width)
+	cursorStyle := lipgloss.NewStyle().Underline(true)
+	cursorMatchStyle := lipgloss.NewStyle().Underline(true).Reverse(true)
 	normal := lipgloss.NewStyle().Width(width)
 	matchStyle := lipgloss.NewStyle().Reverse(true)
 
@@ -202,13 +204,31 @@ func buildView(dc DrawContext, width int, height int, mode inputMode, showHelp b
 		var line string
 		if available <= 0 {
 			line = truncateRunes(prefix, width)
-		} else {
-			path := truncateRunes(entry.Path, available)
-			if filterRaw != "" {
-				path = highlightMatches(path, filterRaw, filenameFilterSingleton().ignoreCase, matchStyle)
+			if index == cursorIndex {
+				lines = append(lines, highlight.Render(line))
+			} else {
+				lines = append(lines, normal.Render(line))
 			}
-			line = prefix + path
+			continue
 		}
+
+		path := truncateRunes(entry.Path, available)
+		if filterRaw != "" {
+			if index == cursorIndex {
+				path = highlightMatchesWithBase(
+					path,
+					filterRaw,
+					filenameFilterSingleton().ignoreCase,
+					cursorStyle,
+					cursorMatchStyle,
+				)
+				line = cursorStyle.Render(prefix) + path
+				lines = append(lines, normal.Render(line))
+				continue
+			}
+			path = highlightMatches(path, filterRaw, filenameFilterSingleton().ignoreCase, matchStyle)
+		}
+		line = prefix + path
 		if index == cursorIndex {
 			lines = append(lines, highlight.Render(line))
 		} else {
@@ -288,6 +308,34 @@ func truncateRunes(text string, width int) string {
 		return text
 	}
 	return string(runes[:width])
+}
+
+func highlightMatchesWithBase(text string, filter string, ignoreCase bool, baseStyle lipgloss.Style, matchStyle lipgloss.Style) string {
+	words := strings.Fields(filter)
+	if len(words) == 0 || text == "" {
+		return baseStyle.Render(text)
+	}
+	ranges := findMatchRanges(text, words, ignoreCase)
+	if len(ranges) == 0 {
+		return baseStyle.Render(text)
+	}
+
+	runes := []rune(text)
+	var b strings.Builder
+	pos := 0
+	for _, r := range ranges {
+		if r[0] > pos {
+			b.WriteString(baseStyle.Render(string(runes[pos:r[0]])))
+		}
+		if r[1] > r[0] {
+			b.WriteString(matchStyle.Render(string(runes[r[0]:r[1]])))
+		}
+		pos = r[1]
+	}
+	if pos < len(runes) {
+		b.WriteString(baseStyle.Render(string(runes[pos:])))
+	}
+	return b.String()
 }
 
 func highlightMatches(text string, filter string, ignoreCase bool, style lipgloss.Style) string {
