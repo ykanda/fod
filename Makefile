@@ -44,5 +44,10 @@ bin/%: cmd/%/main.go deps
 ## Show help
 help:
 	@make2help $(MAKEFILE_LIST)
-    
+
+## Worktree setup
+.PHONY: worktree-setup
+worktree-setup:
+	mise trust
+	    
 .PHONY: setup deps update test lint help
