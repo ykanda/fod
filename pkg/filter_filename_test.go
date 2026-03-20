@@ -51,4 +51,12 @@ func TestFilenameFilterMutators(t *testing.T) {
 	if filter.getFilterString() != "" {
 		t.Fatalf("getFilterString() after extra del = %q, want empty", filter.getFilterString())
 	}
+
+	filter = &FilenameFilter{}
+	filter.addCharacter('あ')
+	filter.addCharacter('い')
+	filter.delCharacter()
+	if filter.getFilterString() != "あ" {
+		t.Fatalf("getFilterString() after multibyte del = %q, want %q", filter.getFilterString(), "あ")
+	}
 }
