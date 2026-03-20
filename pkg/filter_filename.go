@@ -22,9 +22,15 @@ func (filter *FilenameFilter) addCharacter(char rune) {
 
 func (filter *FilenameFilter) delCharacter() {
 	s := filter.filterString
-	if len(s) > 0 {
-		filter.filterString = s[:len(s)-1]
+	if s == "" {
+		return
 	}
+	runes := []rune(s)
+	if len(runes) == 0 {
+		filter.filterString = ""
+		return
+	}
+	filter.filterString = string(runes[:len(runes)-1])
 }
 
 // get singleton instance
