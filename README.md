@@ -25,7 +25,6 @@ It will see the display as follows:
 [d]   ../
 [d]   /Users/kandayasu/.go/src/github.com/ykanda/fod/.git
 [d]   /Users/kandayasu/.go/src/github.com/ykanda/fod/_vendor
-[d]   /Users/kandayasu/.go/src/github.com/ykanda/fod/pkg-config-files
 ```
 
 Items that focus is highlighted. 
@@ -43,7 +42,6 @@ To the marked item is displayed '*'.
 [d]   ../
 [d] * /Users/kandayasu/.go/src/github.com/ykanda/fod/.git
 [d]   /Users/kandayasu/.go/src/github.com/ykanda/fod/_vendor
-[d]   /Users/kandayasu/.go/src/github.com/ykanda/fod/pkg-config-files
 ```
 
 If you mark the other items, the mark of the current item is excluded.

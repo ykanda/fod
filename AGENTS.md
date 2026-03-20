@@ -4,7 +4,6 @@
 - `cmd/fod/main.go`: CLI entrypoint for the `fod` binary.
 - `*.go` at repo root: core library and UI/selection logic.
 - `*_test.go`: Go unit tests (currently `define_test.go`).
-- `pkg-config-files/`: build/config artifacts used by the project.
 - `Makefile`, `go.mod`, `go.sum`: build orchestration and dependencies.
 
 ## Build, Test, and Development Commands
