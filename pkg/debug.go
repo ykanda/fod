@@ -2,18 +2,22 @@ package fod
 
 import (
 	"errors"
+	"io"
 	"log"
 	"os"
 	"runtime"
 )
 
-var logger *log.Logger
+// Default to a no-op logger so package-level code can log safely even when
+// InitDebug isn't called (e.g. in unit tests).
+var logger = log.New(io.Discard, "fod: ", log.Lshortfile)
 var logfile *os.File
 
 // InitDebug : initialize debug function
 func InitDebug() error {
 
-	logfile, err := createLogFile()
+	var err error
+	logfile, err = createLogFile()
 	if err != nil {
 		return err
 	}
@@ -32,6 +36,7 @@ func CloseDebug() {
 		logfile.Close()
 		logfile = nil
 	}
+	logger = log.New(io.Discard, "fod: ", log.Lshortfile)
 }
 
 func nullDevice() (*os.File, error) {

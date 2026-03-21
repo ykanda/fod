@@ -7,6 +7,7 @@ import (
 
 	tea "charm.land/bubbletea/v2"
 	"charm.land/lipgloss/v2"
+	"github.com/mattn/go-runewidth"
 )
 
 const (
@@ -193,14 +194,11 @@ func buildView(dc DrawContext, width int, height int, mode inputMode, showHelp b
 	lines = append(lines, truncateLine(fmt.Sprintf("> %s", filterDisplay), width))
 
 	highlight := lipgloss.NewStyle().Underline(true).Width(width)
-	cursorStyle := lipgloss.NewStyle().Underline(true)
-	cursorMatchStyle := lipgloss.NewStyle().Underline(true).Reverse(true)
 	normal := lipgloss.NewStyle().Width(width)
-	matchStyle := lipgloss.NewStyle().Reverse(true)
 
 	for index, entry := range entries[pageTop:pageEnd] {
 		prefix := fmt.Sprintf("[%s] %s ", entry.typeCharcter(), marked(entry.Marked))
-		available := width - len([]rune(prefix))
+		available := width - runewidth.StringWidth(prefix)
 		var line string
 		if available <= 0 {
 			line = truncateRunes(prefix, width)
@@ -214,19 +212,7 @@ func buildView(dc DrawContext, width int, height int, mode inputMode, showHelp b
 
 		path := truncateRunes(entry.Path, available)
 		if filterRaw != "" {
-			if index == cursorIndex {
-				path = highlightMatchesWithBase(
-					path,
-					filterRaw,
-					filenameFilterSingleton().ignoreCase,
-					cursorStyle,
-					cursorMatchStyle,
-				)
-				line = cursorStyle.Render(prefix) + path
-				lines = append(lines, normal.Render(line))
-				continue
-			}
-			path = highlightMatches(path, filterRaw, filenameFilterSingleton().ignoreCase, matchStyle)
+			path = highlightMatches(path, filterRaw, filenameFilterSingleton().ignoreCase)
 		}
 		line = prefix + path
 		if index == cursorIndex {
@@ -292,53 +278,28 @@ func truncateLine(text string, width int) string {
 	if width <= 0 {
 		return text
 	}
-	runes := []rune(text)
-	if len(runes) <= width {
+	if runewidth.StringWidth(text) <= width {
 		return text
 	}
-	return string(runes[:width])
+	return runewidth.Truncate(text, width, "")
 }
 
 func truncateRunes(text string, width int) string {
 	if width <= 0 {
 		return ""
 	}
-	runes := []rune(text)
-	if len(runes) <= width {
+	if runewidth.StringWidth(text) <= width {
 		return text
 	}
-	return string(runes[:width])
+	return runewidth.Truncate(text, width, "")
 }
 
-func highlightMatchesWithBase(text string, filter string, ignoreCase bool, baseStyle lipgloss.Style, matchStyle lipgloss.Style) string {
-	words := strings.Fields(filter)
-	if len(words) == 0 || text == "" {
-		return baseStyle.Render(text)
-	}
-	ranges := findMatchRanges(text, words, ignoreCase)
-	if len(ranges) == 0 {
-		return baseStyle.Render(text)
-	}
+const (
+	sgrReverseOn  = "\x1b[7m"
+	sgrReverseOff = "\x1b[27m"
+)
 
-	runes := []rune(text)
-	var b strings.Builder
-	pos := 0
-	for _, r := range ranges {
-		if r[0] > pos {
-			b.WriteString(baseStyle.Render(string(runes[pos:r[0]])))
-		}
-		if r[1] > r[0] {
-			b.WriteString(matchStyle.Render(string(runes[r[0]:r[1]])))
-		}
-		pos = r[1]
-	}
-	if pos < len(runes) {
-		b.WriteString(baseStyle.Render(string(runes[pos:])))
-	}
-	return b.String()
-}
-
-func highlightMatches(text string, filter string, ignoreCase bool, style lipgloss.Style) string {
+func highlightMatches(text string, filter string, ignoreCase bool) string {
 	words := strings.Fields(filter)
 	if len(words) == 0 || text == "" {
 		return text
@@ -356,13 +317,17 @@ func highlightMatches(text string, filter string, ignoreCase bool, style lipglos
 			b.WriteString(string(runes[pos:r[0]]))
 		}
 		if r[1] > r[0] {
-			b.WriteString(style.Render(string(runes[r[0]:r[1]])))
+			b.WriteString(sgrReverseOn)
+			b.WriteString(string(runes[r[0]:r[1]]))
+			b.WriteString(sgrReverseOff)
 		}
 		pos = r[1]
+		logger.Printf("b.String(): %#v, pos: %d\n", b.String(), pos)
 	}
 	if pos < len(runes) {
 		b.WriteString(string(runes[pos:]))
 	}
+	logger.Printf("b.String(): %#v\n", b.String())
 	return b.String()
 }
 
