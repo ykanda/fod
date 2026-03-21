@@ -322,10 +322,12 @@ func highlightMatches(text string, filter string, ignoreCase bool) string {
 			b.WriteString(sgrReverseOff)
 		}
 		pos = r[1]
+		logger.Printf("b.String(): %#v, pos: %d\n", b.String(), pos)
 	}
 	if pos < len(runes) {
 		b.WriteString(string(runes[pos:]))
 	}
+	logger.Printf("b.String(): %#v\n", b.String())
 	return b.String()
 }
 
