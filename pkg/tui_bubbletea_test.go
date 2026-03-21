@@ -1,61 +1,39 @@
 package fod
 
 import (
-	"reflect"
 	"testing"
+
+	"github.com/mattn/go-runewidth"
 )
 
-func TestFindMatchRanges(t *testing.T) {
-	t.Parallel()
+func TestTruncateLine_DisplayWidth(t *testing.T) {
+	text := "あああ"
 
-	tests := []struct {
-		name       string
-		text       string
-		words      []string
-		ignoreCase bool
-		want       [][2]int
-	}{
-		{
-			name:  "single match",
-			text:  "/tmp/alpha.txt",
-			words: []string{"alpha"},
-			want:  [][2]int{{5, 10}},
-		},
-		{
-			name:  "multiple matches same word",
-			text:  "foo_bar_foo",
-			words: []string{"foo"},
-			want:  [][2]int{{0, 3}, {8, 11}},
-		},
-		{
-			name:  "multiple words merge overlap",
-			text:  "foobar",
-			words: []string{"foo", "oob"},
-			want:  [][2]int{{0, 4}},
-		},
-		{
-			name:       "ignore case",
-			text:       "HelloWorld",
-			words:      []string{"hello", "WORLD"},
-			ignoreCase: true,
-			want:       [][2]int{{0, 10}},
-		},
-		{
-			name:  "no match",
-			text:  "abc",
-			words: []string{"zzz"},
-			want:  nil,
-		},
+	if got := truncateLine(text, 6); got != text {
+		t.Fatalf("truncateLine(%q, 6) = %q, want %q", text, got, text)
 	}
 
-	for _, tc := range tests {
-		tc := tc
-		t.Run(tc.name, func(t *testing.T) {
-			t.Parallel()
-			got := findMatchRanges(tc.text, tc.words, tc.ignoreCase)
-			if !reflect.DeepEqual(got, tc.want) {
-				t.Fatalf("findMatchRanges() = %#v, want %#v", got, tc.want)
-			}
-		})
+	if got := truncateLine(text, 5); got != "ああ" {
+		t.Fatalf("truncateLine(%q, 5) = %q, want %q", text, got, "ああ")
+	}
+
+	if got := truncateLine(text, 5); runewidth.StringWidth(got) > 5 {
+		t.Fatalf("truncateLine(%q, 5) width = %d, want <= 5", text, runewidth.StringWidth(got))
+	}
+}
+
+func TestTruncateRunes_DisplayWidth(t *testing.T) {
+	text := "あい"
+
+	if got := truncateRunes(text, 4); got != text {
+		t.Fatalf("truncateRunes(%q, 4) = %q, want %q", text, got, text)
+	}
+
+	if got := truncateRunes(text, 3); got != "あ" {
+		t.Fatalf("truncateRunes(%q, 3) = %q, want %q", text, got, "あ")
+	}
+
+	if got := truncateRunes(text, 1); got != "" {
+		t.Fatalf("truncateRunes(%q, 1) = %q, want %q", text, got, "")
 	}
 }

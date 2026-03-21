@@ -7,6 +7,7 @@ import (
 
 	tea "charm.land/bubbletea/v2"
 	"charm.land/lipgloss/v2"
+	"github.com/mattn/go-runewidth"
 )
 
 const (
@@ -200,7 +201,7 @@ func buildView(dc DrawContext, width int, height int, mode inputMode, showHelp b
 
 	for index, entry := range entries[pageTop:pageEnd] {
 		prefix := fmt.Sprintf("[%s] %s ", entry.typeCharcter(), marked(entry.Marked))
-		available := width - len([]rune(prefix))
+		available := width - runewidth.StringWidth(prefix)
 		var line string
 		if available <= 0 {
 			line = truncateRunes(prefix, width)
@@ -292,22 +293,20 @@ func truncateLine(text string, width int) string {
 	if width <= 0 {
 		return text
 	}
-	runes := []rune(text)
-	if len(runes) <= width {
+	if runewidth.StringWidth(text) <= width {
 		return text
 	}
-	return string(runes[:width])
+	return runewidth.Truncate(text, width, "")
 }
 
 func truncateRunes(text string, width int) string {
 	if width <= 0 {
 		return ""
 	}
-	runes := []rune(text)
-	if len(runes) <= width {
+	if runewidth.StringWidth(text) <= width {
 		return text
 	}
-	return string(runes[:width])
+	return runewidth.Truncate(text, width, "")
 }
 
 func highlightMatchesWithBase(text string, filter string, ignoreCase bool, baseStyle lipgloss.Style, matchStyle lipgloss.Style) string {
