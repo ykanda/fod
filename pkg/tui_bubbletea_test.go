@@ -37,3 +37,16 @@ func TestTruncateRunes_DisplayWidth(t *testing.T) {
 		t.Fatalf("truncateRunes(%q, 1) = %q, want %q", text, got, "")
 	}
 }
+
+func TestHighlightMatches(t *testing.T) {
+	text := "あああ.md"
+	filter := "あああ"
+
+	if got := highlightMatches(text, filter, false); got != sgrReverseOn+"あああ"+sgrReverseOff+".md" {
+		t.Fatalf("highlightMatches(%q, %q) = %q", text, filter, got)
+	}
+
+	if got := highlightMatches(text, "zzz", false); got != text {
+		t.Fatalf("highlightMatches(%q, %q) = %q, want %q", text, "zzz", got, text)
+	}
+}
