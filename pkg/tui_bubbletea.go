@@ -105,7 +105,7 @@ func (m dialogModel) handleKey(key tea.Key) (tea.Model, tea.Cmd) {
 		case "left":
 			m.selector.changeDirectoryUp()
 			return m, nil
-		case "ctrl+o", "ctrl+enter":
+		case "ctrl+o", "ctrl+enter", "ctrl+j":
 			if m.selector.decide() {
 				return m, tea.Quit
 			}
@@ -129,7 +129,7 @@ func (m dialogModel) handleKey(key tea.Key) (tea.Model, tea.Cmd) {
 		case "ctrl+q", "ctrl+c":
 			m.selector.cancel()
 			return m, tea.Quit
-		case "ctrl+o", "ctrl+enter":
+		case "ctrl+o", "ctrl+enter", "ctrl+j":
 			if m.selector.decide() {
 				return m, tea.Quit
 			}
