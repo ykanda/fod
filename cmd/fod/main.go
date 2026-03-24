@@ -87,13 +87,25 @@ func action(context *cli.Context) error {
 		},
 	)
 
-	if result != fod.ResultOK {
-		return errors.New("unexpected result code")
+	if err := validateDialogResult(result); err != nil {
+		return err
+	}
+	if result == fod.ResultCancel {
+		return nil
 	}
 
 	sep := context.String("separator")
 	fmt.Fprintln(os.Stdout, strings.Join(output, sep))
 	return nil
+}
+
+func validateDialogResult(result fod.ResultCode) error {
+	switch result {
+	case fod.ResultOK, fod.ResultCancel:
+		return nil
+	default:
+		return errors.New("unexpected result code")
+	}
 }
 
 func flags() ([]cli.Flag, error) {

@@ -1,5 +1,4 @@
 *vendor
-fod
 crash_*.log
 fod.log
 .watsonrc
@@ -31,5 +30,4 @@ _testmain.go
 *.exe
 *.test
 *.prof
-
 
