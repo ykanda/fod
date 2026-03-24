@@ -105,7 +105,7 @@ func (m dialogModel) handleKey(key tea.Key) (tea.Model, tea.Cmd) {
 		case "left":
 			m.selector.changeDirectoryUp()
 			return m, nil
-		case "shift+enter":
+		case "shift+enter", "ctrl+o":
 			if m.selector.decide() {
 				return m, tea.Quit
 			}
@@ -129,7 +129,7 @@ func (m dialogModel) handleKey(key tea.Key) (tea.Model, tea.Cmd) {
 		case "ctrl+q", "ctrl+c":
 			m.selector.cancel()
 			return m, tea.Quit
-		case "shift+enter":
+		case "shift+enter", "ctrl+o":
 			if m.selector.decide() {
 				return m, tea.Quit
 			}
@@ -230,7 +230,7 @@ func buildView(dc DrawContext, width int, height int, mode inputMode, showHelp b
 	)
 	lines = append(lines, truncateLine(status1, width))
 	if showHelp {
-		lines = append(lines, truncateLine(formatHelpLine3("Shift+Enter", "quit, output selected items", "↑ move up"), width))
+		lines = append(lines, truncateLine(formatHelpLine3("Shift+Enter, Ctrl+O", "quit, output selected items", "↑ move up"), width))
 		lines = append(lines, truncateLine(formatHelpLine3("Ctrl+Q, Esc", "quit, no output", "↓ move down"), width))
 		lines = append(lines, truncateLine(formatHelpLine3("Ctrl+F", "filter mode (Esc to exit)", "← move left"), width))
 		lines = append(lines, truncateLine(formatHelpLine3("space", "select/unselect item", "→ move right"), width))
