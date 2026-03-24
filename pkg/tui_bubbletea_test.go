@@ -162,6 +162,44 @@ func TestHandleKey_CtrlJ_InFilterMode(t *testing.T) {
 	}
 }
 
+func TestHandleKey_CtrlM_InNormalMode(t *testing.T) {
+	selector := &keyTestSelector{decideReturn: true}
+	model := dialogModel{
+		selector: selector,
+		mode:     modeNormal,
+	}
+
+	_, cmd := model.handleKey(tea.Key{Code: 'm', Mod: tea.ModCtrl})
+	if selector.decideCalled != 1 {
+		t.Fatalf("decide() called %d times, want 1", selector.decideCalled)
+	}
+	if cmd == nil {
+		t.Fatal("cmd is nil, want tea.Quit")
+	}
+	if _, ok := cmd().(tea.QuitMsg); !ok {
+		t.Fatalf("cmd() = %T, want tea.QuitMsg", cmd())
+	}
+}
+
+func TestHandleKey_CtrlM_InFilterMode(t *testing.T) {
+	selector := &keyTestSelector{decideReturn: true}
+	model := dialogModel{
+		selector: selector,
+		mode:     modeFilter,
+	}
+
+	_, cmd := model.handleKey(tea.Key{Code: 'm', Mod: tea.ModCtrl})
+	if selector.decideCalled != 1 {
+		t.Fatalf("decide() called %d times, want 1", selector.decideCalled)
+	}
+	if cmd == nil {
+		t.Fatal("cmd is nil, want tea.Quit")
+	}
+	if _, ok := cmd().(tea.QuitMsg); !ok {
+		t.Fatalf("cmd() = %T, want tea.QuitMsg", cmd())
+	}
+}
+
 func TestBuildView_HelpIncludesCtrlEnter(t *testing.T) {
 	view := buildView(drawContextForHelp{}, 120, 20, modeNormal, true)
 	if want := "Ctrl+O, Ctrl+Enter"; !strings.Contains(view, want) {
