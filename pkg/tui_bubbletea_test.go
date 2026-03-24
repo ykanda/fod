@@ -1,10 +1,45 @@
 package fod
 
 import (
+	"strings"
 	"testing"
 
+	tea "charm.land/bubbletea/v2"
 	"github.com/mattn/go-runewidth"
 )
+
+type keyTestSelector struct {
+	decideReturn bool
+	decideCalled int
+}
+
+func (s *keyTestSelector) result() ([]string, ResultCode) { return nil, ResultNone }
+func (s *keyTestSelector) markItem()                      {}
+func (s *keyTestSelector) markedItem() []string           { return nil }
+func (s *keyTestSelector) decide() bool {
+	s.decideCalled++
+	return s.decideReturn
+}
+func (s *keyTestSelector) cancel()                        {}
+func (s *keyTestSelector) changeDirectoryToCurrentItem()  {}
+func (s *keyTestSelector) changeDirectoryUp()             {}
+func (s *keyTestSelector) changeDirectory(path string) error {
+	return nil
+}
+func (s *keyTestSelector) moveCursorUp()   {}
+func (s *keyTestSelector) moveCursorDown() {}
+func (s *keyTestSelector) refresh()        {}
+
+type drawContextForHelp struct{}
+
+func (d drawContextForHelp) getEntries() []*Entry {
+	return []*Entry{{Path: "/tmp/example", Marked: true}}
+}
+func (d drawContextForHelp) getCurrentItemIndex() int { return 0 }
+func (d drawContextForHelp) getTotalItems() int       { return 1 }
+func (d drawContextForHelp) getPwd() string           { return "/tmp/example" }
+func (d drawContextForHelp) getMode() string          { return "normal" }
+func (d drawContextForHelp) getFilterString() string  { return "" }
 
 func TestTruncateLine_DisplayWidth(t *testing.T) {
 	text := "あああ"
@@ -48,5 +83,50 @@ func TestHighlightMatches(t *testing.T) {
 
 	if got := highlightMatches(text, "zzz", false); got != text {
 		t.Fatalf("highlightMatches(%q, %q) = %q, want %q", text, "zzz", got, text)
+	}
+}
+
+func TestHandleKey_CtrlEnter_InNormalMode(t *testing.T) {
+	selector := &keyTestSelector{decideReturn: true}
+	model := dialogModel{
+		selector: selector,
+		mode:     modeNormal,
+	}
+
+	_, cmd := model.handleKey(tea.Key{Code: tea.KeyEnter, Mod: tea.ModCtrl})
+	if selector.decideCalled != 1 {
+		t.Fatalf("decide() called %d times, want 1", selector.decideCalled)
+	}
+	if cmd == nil {
+		t.Fatal("cmd is nil, want tea.Quit")
+	}
+	if _, ok := cmd().(tea.QuitMsg); !ok {
+		t.Fatalf("cmd() = %T, want tea.QuitMsg", cmd())
+	}
+}
+
+func TestHandleKey_CtrlEnter_InFilterMode(t *testing.T) {
+	selector := &keyTestSelector{decideReturn: true}
+	model := dialogModel{
+		selector: selector,
+		mode:     modeFilter,
+	}
+
+	_, cmd := model.handleKey(tea.Key{Code: tea.KeyEnter, Mod: tea.ModCtrl})
+	if selector.decideCalled != 1 {
+		t.Fatalf("decide() called %d times, want 1", selector.decideCalled)
+	}
+	if cmd == nil {
+		t.Fatal("cmd is nil, want tea.Quit")
+	}
+	if _, ok := cmd().(tea.QuitMsg); !ok {
+		t.Fatalf("cmd() = %T, want tea.QuitMsg", cmd())
+	}
+}
+
+func TestBuildView_HelpIncludesCtrlEnter(t *testing.T) {
+	view := buildView(drawContextForHelp{}, 120, 20, modeNormal, true)
+	if want := "Ctrl+O, Ctrl+Enter"; !strings.Contains(view, want) {
+		t.Fatalf("view does not include %q", want)
 	}
 }
