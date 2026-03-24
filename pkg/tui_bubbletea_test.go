@@ -86,14 +86,14 @@ func TestHighlightMatches(t *testing.T) {
 	}
 }
 
-func TestHandleKey_CtrlEnter_InNormalMode(t *testing.T) {
+func TestHandleKey_ShiftEnter_InNormalMode(t *testing.T) {
 	selector := &keyTestSelector{decideReturn: true}
 	model := dialogModel{
 		selector: selector,
 		mode:     modeNormal,
 	}
 
-	_, cmd := model.handleKey(tea.Key{Code: tea.KeyEnter, Mod: tea.ModCtrl})
+	_, cmd := model.handleKey(tea.Key{Code: tea.KeyEnter, Mod: tea.ModShift})
 	if selector.decideCalled != 1 {
 		t.Fatalf("decide() called %d times, want 1", selector.decideCalled)
 	}
@@ -105,14 +105,14 @@ func TestHandleKey_CtrlEnter_InNormalMode(t *testing.T) {
 	}
 }
 
-func TestHandleKey_CtrlEnter_InFilterMode(t *testing.T) {
+func TestHandleKey_ShiftEnter_InFilterMode(t *testing.T) {
 	selector := &keyTestSelector{decideReturn: true}
 	model := dialogModel{
 		selector: selector,
 		mode:     modeFilter,
 	}
 
-	_, cmd := model.handleKey(tea.Key{Code: tea.KeyEnter, Mod: tea.ModCtrl})
+	_, cmd := model.handleKey(tea.Key{Code: tea.KeyEnter, Mod: tea.ModShift})
 	if selector.decideCalled != 1 {
 		t.Fatalf("decide() called %d times, want 1", selector.decideCalled)
 	}
@@ -124,85 +124,41 @@ func TestHandleKey_CtrlEnter_InFilterMode(t *testing.T) {
 	}
 }
 
-func TestHandleKey_CtrlJ_InNormalMode(t *testing.T) {
+func TestHandleKey_CtrlO_DoesNotDecide_InNormalMode(t *testing.T) {
 	selector := &keyTestSelector{decideReturn: true}
 	model := dialogModel{
 		selector: selector,
 		mode:     modeNormal,
 	}
 
-	_, cmd := model.handleKey(tea.Key{Code: 'j', Mod: tea.ModCtrl})
-	if selector.decideCalled != 1 {
-		t.Fatalf("decide() called %d times, want 1", selector.decideCalled)
+	_, cmd := model.handleKey(tea.Key{Code: 'o', Mod: tea.ModCtrl})
+	if selector.decideCalled != 0 {
+		t.Fatalf("decide() called %d times, want 0", selector.decideCalled)
 	}
-	if cmd == nil {
-		t.Fatal("cmd is nil, want tea.Quit")
-	}
-	if _, ok := cmd().(tea.QuitMsg); !ok {
-		t.Fatalf("cmd() = %T, want tea.QuitMsg", cmd())
+	if cmd != nil {
+		t.Fatalf("cmd = %v, want nil", cmd)
 	}
 }
 
-func TestHandleKey_CtrlJ_InFilterMode(t *testing.T) {
+func TestHandleKey_CtrlO_DoesNotDecide_InFilterMode(t *testing.T) {
 	selector := &keyTestSelector{decideReturn: true}
 	model := dialogModel{
 		selector: selector,
 		mode:     modeFilter,
 	}
 
-	_, cmd := model.handleKey(tea.Key{Code: 'j', Mod: tea.ModCtrl})
-	if selector.decideCalled != 1 {
-		t.Fatalf("decide() called %d times, want 1", selector.decideCalled)
+	_, cmd := model.handleKey(tea.Key{Code: 'o', Mod: tea.ModCtrl})
+	if selector.decideCalled != 0 {
+		t.Fatalf("decide() called %d times, want 0", selector.decideCalled)
 	}
-	if cmd == nil {
-		t.Fatal("cmd is nil, want tea.Quit")
-	}
-	if _, ok := cmd().(tea.QuitMsg); !ok {
-		t.Fatalf("cmd() = %T, want tea.QuitMsg", cmd())
+	if cmd != nil {
+		t.Fatalf("cmd = %v, want nil", cmd)
 	}
 }
 
-func TestHandleKey_CtrlM_InNormalMode(t *testing.T) {
-	selector := &keyTestSelector{decideReturn: true}
-	model := dialogModel{
-		selector: selector,
-		mode:     modeNormal,
-	}
-
-	_, cmd := model.handleKey(tea.Key{Code: 'm', Mod: tea.ModCtrl})
-	if selector.decideCalled != 1 {
-		t.Fatalf("decide() called %d times, want 1", selector.decideCalled)
-	}
-	if cmd == nil {
-		t.Fatal("cmd is nil, want tea.Quit")
-	}
-	if _, ok := cmd().(tea.QuitMsg); !ok {
-		t.Fatalf("cmd() = %T, want tea.QuitMsg", cmd())
-	}
-}
-
-func TestHandleKey_CtrlM_InFilterMode(t *testing.T) {
-	selector := &keyTestSelector{decideReturn: true}
-	model := dialogModel{
-		selector: selector,
-		mode:     modeFilter,
-	}
-
-	_, cmd := model.handleKey(tea.Key{Code: 'm', Mod: tea.ModCtrl})
-	if selector.decideCalled != 1 {
-		t.Fatalf("decide() called %d times, want 1", selector.decideCalled)
-	}
-	if cmd == nil {
-		t.Fatal("cmd is nil, want tea.Quit")
-	}
-	if _, ok := cmd().(tea.QuitMsg); !ok {
-		t.Fatalf("cmd() = %T, want tea.QuitMsg", cmd())
-	}
-}
-
-func TestBuildView_HelpIncludesCtrlEnter(t *testing.T) {
+func TestBuildView_HelpIncludesShiftEnter(t *testing.T) {
 	view := buildView(drawContextForHelp{}, 120, 20, modeNormal, true)
-	if want := "Ctrl+O, Ctrl+Enter"; !strings.Contains(view, want) {
+	if want := "Shift+Enter"; !strings.Contains(view, want) {
 		t.Fatalf("view does not include %q", want)
 	}
 }

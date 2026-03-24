@@ -51,7 +51,7 @@ If you want to select multiple items at the same time, use the `--multiple` opti
 Exit and output selected item to STDIO
 --------
 
-When you press Ctrl + O or Ctrl + Enter, and then exit the selection.
+When you press Shift + Enter, and then exit the selection.
 The marked items are displayed in the standard output.
 
 
@@ -115,8 +115,7 @@ Key Bindings
 | Space        | toggle marked / unmarked         |
 | Ctrl + F     | enter filter mode                |
 | Ctrl + H     | toggle dotfile filter            |
-| Ctrl + O     | OK, exit and output selcted item |
-| Ctrl + Enter | OK, exit and output selcted item |
+| Shift + Enter | OK, exit and output selcted item |
 | Ctrl + C     | cancel and exit, no output       |
 | Ctrl + Q     | cancel and exit, no output       |
 | Esc          | cancel and exit, no output       |
