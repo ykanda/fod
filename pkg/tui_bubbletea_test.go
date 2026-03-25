@@ -20,9 +20,9 @@ func (s *keyTestSelector) decide() bool {
 	s.decideCalled++
 	return s.decideReturn
 }
-func (s *keyTestSelector) cancel()                        {}
-func (s *keyTestSelector) changeDirectoryToCurrentItem()  {}
-func (s *keyTestSelector) changeDirectoryUp()             {}
+func (s *keyTestSelector) cancel()                       {}
+func (s *keyTestSelector) changeDirectoryToCurrentItem() {}
+func (s *keyTestSelector) changeDirectoryUp()            {}
 func (s *keyTestSelector) changeDirectory(path string) error {
 	return nil
 }
@@ -40,6 +40,38 @@ func (d drawContextForHelp) getTotalItems() int       { return 1 }
 func (d drawContextForHelp) getPwd() string           { return "/tmp/example" }
 func (d drawContextForHelp) getMode() string          { return "normal" }
 func (d drawContextForHelp) getFilterString() string  { return "" }
+
+type drawContextStub struct {
+	entries      []*Entry
+	currentIndex int
+	pwd          string
+	mode         string
+	filter       string
+}
+
+func (d drawContextStub) getEntries() []*Entry {
+	return d.entries
+}
+
+func (d drawContextStub) getCurrentItemIndex() int {
+	return d.currentIndex
+}
+
+func (d drawContextStub) getTotalItems() int {
+	return len(d.entries)
+}
+
+func (d drawContextStub) getPwd() string {
+	return d.pwd
+}
+
+func (d drawContextStub) getMode() string {
+	return d.mode
+}
+
+func (d drawContextStub) getFilterString() string {
+	return d.filter
+}
 
 func TestTruncateLine_DisplayWidth(t *testing.T) {
 	text := "あああ"
@@ -166,5 +198,56 @@ func TestBuildView_HelpIncludesShiftEnterAndCtrlO(t *testing.T) {
 	view := buildView(drawContextForHelp{}, 120, 20, modeNormal, true)
 	if want := "Shift+Enter, Ctrl+O"; !strings.Contains(view, want) {
 		t.Fatalf("view does not include %q", want)
+	}
+}
+
+func TestBuildView_FillsWindowHeight_WithoutHelp(t *testing.T) {
+	dc := drawContextStub{
+		entries: []*Entry{
+			{Path: "/tmp/file1", Type: FsTypeFile},
+		},
+		currentIndex: 0,
+		pwd:          "/tmp/file1",
+		mode:         "file",
+	}
+
+	const height = 10
+	view := buildView(dc, 80, height, modeNormal, false)
+	lines := strings.Split(view, "\n")
+
+	if len(lines) != height {
+		t.Fatalf("buildView line count = %d, want %d", len(lines), height)
+	}
+	if !strings.Contains(lines[len(lines)-2], "select") {
+		t.Fatalf("status line should be fixed near bottom, got: %q", lines[len(lines)-2])
+	}
+	if !strings.Contains(lines[len(lines)-1], "? help") {
+		t.Fatalf("last line should be help line, got: %q", lines[len(lines)-1])
+	}
+}
+
+func TestBuildView_FillsWindowHeight_WithHelp(t *testing.T) {
+	dc := drawContextStub{
+		entries: []*Entry{
+			{Path: "/tmp/file1", Type: FsTypeFile},
+			{Path: "/tmp/file2", Type: FsTypeFile},
+		},
+		currentIndex: 0,
+		pwd:          "/tmp/file1",
+		mode:         "file",
+	}
+
+	const height = 12
+	view := buildView(dc, 80, height, modeNormal, true)
+	lines := strings.Split(view, "\n")
+
+	if len(lines) != height {
+		t.Fatalf("buildView line count = %d, want %d", len(lines), height)
+	}
+	if !strings.Contains(lines[len(lines)-6], "select") {
+		t.Fatalf("status line should keep its fixed area, got: %q", lines[len(lines)-6])
+	}
+	if !strings.Contains(lines[len(lines)-1], "toggle Help") {
+		t.Fatalf("last line should be full help footer, got: %q", lines[len(lines)-1])
 	}
 }

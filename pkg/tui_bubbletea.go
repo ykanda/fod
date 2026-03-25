@@ -163,13 +163,32 @@ func (m dialogModel) View() tea.View {
 func buildView(dc DrawContext, width int, height int, mode inputMode, showHelp bool) string {
 	width, height = normalizeSize(width, height)
 
-	helpLinesCount := 1
-	if showHelp {
-		helpLinesCount = 3
+	helpLines := []string{
+		truncateLine(fmt.Sprintf("[%s] ? help", dc.getMode()), width),
 	}
-	linePerPage := height - (1 + 1 + helpLinesCount) // 1 (top) + 1 (status) + helpLinesCount (bottom)
+	if showHelp {
+		helpLines = []string{
+			truncateLine(formatHelpLine3("Shift+Enter, Ctrl+O", "quit, output selected items", "↑ move up"), width),
+			truncateLine(formatHelpLine3("Ctrl+Q, Esc", "quit, no output", "↓ move down"), width),
+			truncateLine(formatHelpLine3("Ctrl+F", "filter mode (Esc to exit)", "← move left"), width),
+			truncateLine(formatHelpLine3("space", "select/unselect item", "→ move right"), width),
+			truncateLine(formatHelpLine3("?", "toggle Help", ""), width),
+		}
+	}
+	availableBottom := height - 2 // 1 (top) + 1 (status)
+	if availableBottom < 0 {
+		availableBottom = 0
+	}
+	linePerPage := availableBottom - len(helpLines)
 	if linePerPage < 1 {
 		linePerPage = 1
+	}
+	helpLinesCount := availableBottom - linePerPage
+	if helpLinesCount < 0 {
+		helpLinesCount = 0
+	}
+	if helpLinesCount > len(helpLines) {
+		helpLinesCount = len(helpLines)
 	}
 
 	entries := dc.getEntries()
@@ -222,6 +241,10 @@ func buildView(dc DrawContext, width int, height int, mode inputMode, showHelp b
 		}
 	}
 
+	for i := pageEnd - pageTop; i < linePerPage; i++ {
+		lines = append(lines, "")
+	}
+
 	status1 := fmt.Sprintf(
 		"select %3d of %3d items %s",
 		dc.getCurrentItemIndex()+1,
@@ -229,14 +252,8 @@ func buildView(dc DrawContext, width int, height int, mode inputMode, showHelp b
 		dc.getPwd(),
 	)
 	lines = append(lines, truncateLine(status1, width))
-	if showHelp {
-		lines = append(lines, truncateLine(formatHelpLine3("Shift+Enter, Ctrl+O", "quit, output selected items", "↑ move up"), width))
-		lines = append(lines, truncateLine(formatHelpLine3("Ctrl+Q, Esc", "quit, no output", "↓ move down"), width))
-		lines = append(lines, truncateLine(formatHelpLine3("Ctrl+F", "filter mode (Esc to exit)", "← move left"), width))
-		lines = append(lines, truncateLine(formatHelpLine3("space", "select/unselect item", "→ move right"), width))
-		lines = append(lines, truncateLine(formatHelpLine3("?", "toggle Help", ""), width))
-	} else {
-		lines = append(lines, truncateLine(fmt.Sprintf("[%s] ? help", dc.getMode()), width))
+	for i := 0; i < helpLinesCount; i++ {
+		lines = append(lines, helpLines[i])
 	}
 
 	return strings.Join(lines, "\n")
