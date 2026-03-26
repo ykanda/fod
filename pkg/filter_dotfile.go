@@ -1,6 +1,7 @@
 package fod
 
 import (
+	"path/filepath"
 	"strings"
 )
 
@@ -24,7 +25,8 @@ func (filter *DotfileFilter) filter(entries []*Entry) (result []*Entry) {
 	for _, entry := range entries {
 		f := true
 		if entry.Path != "../" {
-			if filter.enable == true && strings.HasPrefix(entry.Path, ".") {
+			name := filepath.Base(entry.Path)
+			if filter.enable == true && strings.HasPrefix(name, ".") {
 				f = false
 			}
 		}
