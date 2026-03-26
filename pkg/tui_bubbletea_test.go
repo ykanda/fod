@@ -221,6 +221,9 @@ func TestBuildView_FillsWindowHeight_WithoutHelp(t *testing.T) {
 	if !strings.Contains(lines[len(lines)-2], "select") {
 		t.Fatalf("status line should be fixed near bottom, got: %q", lines[len(lines)-2])
 	}
+	if !strings.Contains(lines[len(lines)-2], sgrReverseOn) {
+		t.Fatalf("status line should be highlighted by reverse style, got: %q", lines[len(lines)-2])
+	}
 	if !strings.Contains(lines[len(lines)-1], "? help") {
 		t.Fatalf("last line should be help line, got: %q", lines[len(lines)-1])
 	}
@@ -246,6 +249,9 @@ func TestBuildView_FillsWindowHeight_WithHelp(t *testing.T) {
 	}
 	if !strings.Contains(lines[len(lines)-6], "select") {
 		t.Fatalf("status line should keep its fixed area, got: %q", lines[len(lines)-6])
+	}
+	if !strings.Contains(lines[len(lines)-6], sgrReverseOn) {
+		t.Fatalf("status line should be highlighted by reverse style, got: %q", lines[len(lines)-6])
 	}
 	if !strings.Contains(lines[len(lines)-1], "toggle Help") {
 		t.Fatalf("last line should be full help footer, got: %q", lines[len(lines)-1])

@@ -251,7 +251,8 @@ func buildView(dc DrawContext, width int, height int, mode inputMode, showHelp b
 		dc.getTotalItems(),
 		dc.getPwd(),
 	)
-	lines = append(lines, truncateLine(status1, width))
+	statusLine := lipgloss.NewStyle().Reverse(true).Width(width).Render(truncateLine(status1, width))
+	lines = append(lines, statusLine)
 	for i := 0; i < helpLinesCount; i++ {
 		lines = append(lines, helpLines[i])
 	}
