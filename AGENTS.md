@@ -1,4 +1,6 @@
 # Repository Guidelines
+## Common rules
+- 基本的に英語で対応する
 
 ## Project Structure & Module Organization
 - `cmd/fod/main.go`: CLI entrypoint for the `fod` binary.
