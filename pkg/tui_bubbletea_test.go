@@ -194,9 +194,12 @@ func TestHandleKey_CtrlO_InFilterMode(t *testing.T) {
 	}
 }
 
-func TestBuildView_HelpIncludesShiftEnterAndCtrlO(t *testing.T) {
+func TestBuildView_HelpIncludesCtrlOAndCtrlH(t *testing.T) {
 	view := buildView(drawContextForHelp{}, 120, 20, modeNormal, true)
-	if want := "Shift+Enter, Ctrl+O"; !strings.Contains(view, want) {
+	if want := "Ctrl+O"; !strings.Contains(view, want) {
+		t.Fatalf("view does not include %q", want)
+	}
+	if want := "Ctrl+H"; !strings.Contains(view, want) {
 		t.Fatalf("view does not include %q", want)
 	}
 }
@@ -240,15 +243,15 @@ func TestBuildView_FillsWindowHeight_WithHelp(t *testing.T) {
 		mode:         "file",
 	}
 
-	const height = 12
+	const height = 13
 	view := buildView(dc, 80, height, modeNormal, true)
 	lines := strings.Split(view, "\n")
 
 	if len(lines) != height {
 		t.Fatalf("buildView line count = %d, want %d", len(lines), height)
 	}
-	if !strings.Contains(lines[len(lines)-6], "select") {
-		t.Fatalf("status line should keep its fixed area, got: %q", lines[len(lines)-6])
+	if !strings.Contains(lines[len(lines)-11], "select") {
+		t.Fatalf("status line should keep its fixed area, got: %q", lines[len(lines)-11])
 	}
 	if !strings.Contains(lines[len(lines)-6], sgrReverseOn) {
 		t.Fatalf("status line should be highlighted by reverse style, got: %q", lines[len(lines)-6])

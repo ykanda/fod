@@ -168,11 +168,16 @@ func buildView(dc DrawContext, width int, height int, mode inputMode, showHelp b
 	}
 	if showHelp {
 		helpLines = []string{
-			truncateLine(formatHelpLine3("Shift+Enter, Ctrl+O", "quit, output selected items", "↑ move up"), width),
-			truncateLine(formatHelpLine3("Ctrl+Q, Esc", "quit, no output", "↓ move down"), width),
-			truncateLine(formatHelpLine3("Ctrl+F", "filter mode (Esc to exit)", "← move left"), width),
-			truncateLine(formatHelpLine3("space", "select/unselect item", "→ move right"), width),
-			truncateLine(formatHelpLine3("?", "toggle Help", ""), width),
+			truncateLine(formatHelpLine2("Ctrl+O", "quit, output selected items (or Shift + Enter)"), width),
+			truncateLine(formatHelpLine2("Ctrl+Q", "quit, no output (or Esc)"), width),
+			truncateLine(formatHelpLine2("Ctrl+F", "filter mode (Esc to exit)"), width),
+			truncateLine(formatHelpLine2("Ctrl+H", "toggle hidden file filter"), width),
+			truncateLine(formatHelpLine2("space", "select/unselect item"), width),
+			truncateLine(formatHelpLine2("↑", "move cursor up"), width),
+			truncateLine(formatHelpLine2("↓", "move cursor down"), width),
+			truncateLine(formatHelpLine2("←", "go to parent directory"), width),
+			truncateLine(formatHelpLine2("→", "enter the directory at the cursor"), width),
+			truncateLine(formatHelpLine2("?", "toggle Help"), width),
 		}
 	}
 	availableBottom := height - 2 // 1 (top) + 1 (status)
@@ -260,13 +265,9 @@ func buildView(dc DrawContext, width int, height int, mode inputMode, showHelp b
 	return strings.Join(lines, "\n")
 }
 
-func formatHelpLine3(left string, middle string, right string) string {
+func formatHelpLine2(left string, right string) string {
 	const leftWidth = 12
-	const middleWidth = 30
-	if right == "" {
-		return fmt.Sprintf("%-*s %s", leftWidth, left, middle)
-	}
-	return fmt.Sprintf("%-*s %-*s %s", leftWidth, left, middleWidth, middle, right)
+	return fmt.Sprintf("%-*s %s", leftWidth, left, right)
 }
 
 func marked(m bool) string {

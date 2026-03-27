@@ -107,19 +107,16 @@ Key Bindings
 
 | **KEY**      | **Explaination**                 |
 | ------------ | -------------------------------- |
-| Enter        | open directory                   |
+| Ctrl + O     | quit, output selected items (or Shift + Enter) |
+| Ctrl + Q     | quit, no output (or Esc)         |
+| Ctrl + F     | filter mode (Esc to exit)        |
+| Ctrl + H     | toggle hidden file filter        |
+| Space        | select / unselect item           |
 | Arrow Up     | move cursor up                   |
 | Arrow Down   | move cursor down                 |
-| Arrow Left   | move parent directory            |
-| Arrow Right  | move sub directory               |
-| Space        | toggle marked / unmarked         |
-| Ctrl + F     | enter filter mode                |
-| Ctrl + H     | toggle dotfile filter            |
-| Shift + Enter | OK, exit and output selcted item |
-| Ctrl + O      | OK, exit and output selcted item (fallback) |
-| Ctrl + C     | cancel and exit, no output       |
-| Ctrl + Q     | cancel and exit, no output       |
-| Esc          | cancel and exit, no output       |
+| Arrow Left   | go to parent directory           |
+| Arrow Right  | enter the directory at the cursor |
+| ?            | toggle Help                      |
 
 In filter mode, `Esc` returns to normal mode.
 
