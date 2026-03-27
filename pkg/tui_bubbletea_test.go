@@ -244,8 +244,8 @@ func TestBuildView_FillsWindowHeight_WithHelp(t *testing.T) {
 	if len(lines) != height {
 		t.Fatalf("buildView line count = %d, want %d", len(lines), height)
 	}
-	if !strings.Contains(lines[len(lines)-6], "select") {
-		t.Fatalf("status line should keep its fixed area, got: %q", lines[len(lines)-6])
+	if !strings.Contains(lines[len(lines)-7], "select") {
+		t.Fatalf("status line should keep its fixed area, got: %q", lines[len(lines)-7])
 	}
 	if !strings.Contains(lines[len(lines)-1], "toggle Help") {
 		t.Fatalf("last line should be full help footer, got: %q", lines[len(lines)-1])

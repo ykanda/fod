@@ -171,6 +171,7 @@ func buildView(dc DrawContext, width int, height int, mode inputMode, showHelp b
 			truncateLine(formatHelpLine3("Shift+Enter, Ctrl+O", "quit, output selected items", "↑ move up"), width),
 			truncateLine(formatHelpLine3("Ctrl+Q, Esc", "quit, no output", "↓ move down"), width),
 			truncateLine(formatHelpLine3("Ctrl+F", "filter mode (Esc to exit)", "← move left"), width),
+			truncateLine(formatHelpLine3("Ctrl+H", "toggle hidden file filter", ""), width),
 			truncateLine(formatHelpLine3("space", "select/unselect item", "→ move right"), width),
 			truncateLine(formatHelpLine3("?", "toggle Help", ""), width),
 		}
