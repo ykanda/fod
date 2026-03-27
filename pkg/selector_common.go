@@ -157,6 +157,23 @@ func (selector *SelectorCommon) markItem() {
 	}
 }
 
+func (selector *SelectorCommon) selectAll() {
+	if !selector.Multi {
+		return
+	}
+
+	for i := range selector.Entries {
+		selector.Entries[i].Marked = false
+	}
+
+	entries := selector.getEntries()
+	selector.marked = make([]string, 0, len(entries))
+	for _, entry := range entries {
+		entry.Marked = true
+		selector.marked = append(selector.marked, entry.Path)
+	}
+}
+
 func filter(a []string, f func(string) bool) []string {
 	n := []string{}
 	for _, x := range a {

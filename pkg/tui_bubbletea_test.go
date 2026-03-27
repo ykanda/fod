@@ -9,12 +9,14 @@ import (
 )
 
 type keyTestSelector struct {
-	decideReturn bool
-	decideCalled int
+	decideReturn   bool
+	decideCalled   int
+	selectAllCalled int
 }
 
 func (s *keyTestSelector) result() ([]string, ResultCode) { return nil, ResultNone }
 func (s *keyTestSelector) markItem()                      {}
+func (s *keyTestSelector) selectAll()                     { s.selectAllCalled++ }
 func (s *keyTestSelector) markedItem() []string           { return nil }
 func (s *keyTestSelector) decide() bool {
 	s.decideCalled++
@@ -194,12 +196,44 @@ func TestHandleKey_CtrlO_InFilterMode(t *testing.T) {
 	}
 }
 
+func TestHandleKey_CtrlA_InNormalMode(t *testing.T) {
+	selector := &keyTestSelector{}
+	model := dialogModel{
+		selector: selector,
+		mode:     modeNormal,
+	}
+
+	_, cmd := model.handleKey(tea.Key{Code: 'a', Mod: tea.ModCtrl})
+	if selector.selectAllCalled != 1 {
+		t.Fatalf("selectAll() called %d times, want 1", selector.selectAllCalled)
+	}
+	if cmd != nil {
+		t.Fatalf("cmd = %v, want nil", cmd)
+	}
+}
+
+func TestHandleKey_CtrlA_InFilterMode(t *testing.T) {
+	selector := &keyTestSelector{}
+	model := dialogModel{
+		selector: selector,
+		mode:     modeFilter,
+	}
+
+	_, _ = model.handleKey(tea.Key{Code: 'a', Mod: tea.ModCtrl})
+	if selector.selectAllCalled != 0 {
+		t.Fatalf("selectAll() called %d times, want 0", selector.selectAllCalled)
+	}
+}
+
 func TestBuildView_HelpIncludesCtrlOAndCtrlH(t *testing.T) {
 	view := buildView(drawContextForHelp{}, 120, 20, modeNormal, true)
 	if want := "Ctrl+O"; !strings.Contains(view, want) {
 		t.Fatalf("view does not include %q", want)
 	}
 	if want := "Ctrl+H"; !strings.Contains(view, want) {
+		t.Fatalf("view does not include %q", want)
+	}
+	if want := "Ctrl+A"; !strings.Contains(view, want) {
 		t.Fatalf("view does not include %q", want)
 	}
 }

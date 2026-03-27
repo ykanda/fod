@@ -125,3 +125,38 @@ func TestSelectorCommonGetFilterString(t *testing.T) {
 		t.Fatalf("getFilterString() = %q, want %q", got, "abc")
 	}
 }
+
+func TestSelectorCommonSelectAll(t *testing.T) {
+	sel := &SelectorCommon{
+		Multi: true,
+		Entries: []*Entry{
+			{Path: "/tmp/a", Type: FsTypeFile},
+			{Path: "/tmp/b", Type: FsTypeFile},
+		},
+	}
+
+	sel.selectAll()
+	if len(sel.marked) != 2 {
+		t.Fatalf("selectAll() marked size = %d, want 2", len(sel.marked))
+	}
+	if !sel.Entries[0].Marked || !sel.Entries[1].Marked {
+		t.Fatalf("selectAll() should mark all entries")
+	}
+}
+
+func TestSelectorCommonSelectAll_NoMulti(t *testing.T) {
+	sel := &SelectorCommon{
+		Multi: false,
+		Entries: []*Entry{
+			{Path: "/tmp/a", Type: FsTypeFile},
+		},
+	}
+
+	sel.selectAll()
+	if len(sel.marked) != 0 {
+		t.Fatalf("selectAll() marked size = %d, want 0", len(sel.marked))
+	}
+	if sel.Entries[0].Marked {
+		t.Fatalf("selectAll() should not mark entry when multi is false")
+	}
+}
