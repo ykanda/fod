@@ -130,6 +130,7 @@ func TestSelectorCommonSelectAll(t *testing.T) {
 	sel := &SelectorCommon{
 		Multi: true,
 		Entries: []*Entry{
+			{Path: "../", Type: FsTypeDir},
 			{Path: "/tmp/a", Type: FsTypeFile},
 			{Path: "/tmp/b", Type: FsTypeFile},
 		},
@@ -139,8 +140,11 @@ func TestSelectorCommonSelectAll(t *testing.T) {
 	if len(sel.marked) != 2 {
 		t.Fatalf("selectAll() marked size = %d, want 2", len(sel.marked))
 	}
-	if !sel.Entries[0].Marked || !sel.Entries[1].Marked {
-		t.Fatalf("selectAll() should mark all entries")
+	if sel.Entries[0].Marked {
+		t.Fatalf("selectAll() should not mark parent entry")
+	}
+	if !sel.Entries[1].Marked || !sel.Entries[2].Marked {
+		t.Fatalf("selectAll() should mark selectable entries")
 	}
 }
 
@@ -158,5 +162,21 @@ func TestSelectorCommonSelectAll_NoMulti(t *testing.T) {
 	}
 	if sel.Entries[0].Marked {
 		t.Fatalf("selectAll() should not mark entry when multi is false")
+	}
+}
+
+func TestSelectorCommonMarkItem_ParentEntry(t *testing.T) {
+	sel := &SelectorCommon{
+		Multi:   true,
+		Cursor:  0,
+		Entries: []*Entry{{Path: "../", Type: FsTypeDir}},
+	}
+
+	sel.markItem()
+	if len(sel.marked) != 0 {
+		t.Fatalf("markItem() should ignore parent entry, got %#v", sel.marked)
+	}
+	if sel.Entries[0].Marked {
+		t.Fatalf("markItem() should not mark parent entry")
 	}
 }

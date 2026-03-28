@@ -148,6 +148,9 @@ func (selector *SelectorCommon) markItem() {
 	if p, err := selector.currentItem(); err == nil {
 		path = p
 	}
+	if path == "../" {
+		return
+	}
 
 	switch selector.Multi {
 	case true:
@@ -169,6 +172,10 @@ func (selector *SelectorCommon) selectAll() {
 	entries := selector.getEntries()
 	selector.marked = make([]string, 0, len(entries))
 	for _, entry := range entries {
+		if entry.Path == "../" {
+			entry.Marked = false
+			continue
+		}
 		entry.Marked = true
 		selector.marked = append(selector.marked, entry.Path)
 	}
