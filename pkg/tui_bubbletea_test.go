@@ -227,14 +227,14 @@ func TestHandleKey_CtrlA_InFilterMode(t *testing.T) {
 	}
 }
 
-func TestHandleKey_CtrlShiftA_InNormalMode(t *testing.T) {
+func TestHandleKey_CtrlD_InNormalMode(t *testing.T) {
 	selector := &keyTestSelector{}
 	model := dialogModel{
 		selector: selector,
 		mode:     modeNormal,
 	}
 
-	_, cmd := model.handleKey(tea.Key{Code: 'a', Mod: tea.ModCtrl | tea.ModShift})
+	_, cmd := model.handleKey(tea.Key{Code: 'd', Mod: tea.ModCtrl})
 	if selector.clearAllCalled != 1 {
 		t.Fatalf("clearAll() called %d times, want 1", selector.clearAllCalled)
 	}
@@ -243,14 +243,14 @@ func TestHandleKey_CtrlShiftA_InNormalMode(t *testing.T) {
 	}
 }
 
-func TestHandleKey_CtrlShiftA_InFilterMode(t *testing.T) {
+func TestHandleKey_CtrlD_InFilterMode(t *testing.T) {
 	selector := &keyTestSelector{}
 	model := dialogModel{
 		selector: selector,
 		mode:     modeFilter,
 	}
 
-	_, _ = model.handleKey(tea.Key{Code: 'a', Mod: tea.ModCtrl | tea.ModShift})
+	_, _ = model.handleKey(tea.Key{Code: 'd', Mod: tea.ModCtrl})
 	if selector.clearAllCalled != 0 {
 		t.Fatalf("clearAll() called %d times, want 0", selector.clearAllCalled)
 	}
@@ -267,7 +267,7 @@ func TestBuildView_HelpIncludesCtrlOAndCtrlH(t *testing.T) {
 	if want := "Ctrl+A"; !strings.Contains(view, want) {
 		t.Fatalf("view does not include %q", want)
 	}
-	if want := "Ctrl+Shift+A"; !strings.Contains(view, want) {
+	if want := "Ctrl+D"; !strings.Contains(view, want) {
 		t.Fatalf("view does not include %q", want)
 	}
 }
