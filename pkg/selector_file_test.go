@@ -54,3 +54,27 @@ func TestFileSelectorMarkItem(t *testing.T) {
 		t.Fatalf("markItem() should mark file entry")
 	}
 }
+
+func TestFileSelectorSelectAll(t *testing.T) {
+	common := &SelectorCommon{
+		Multi: true,
+		Entries: []*Entry{
+			{Path: "../", Type: FsTypeDir},
+			{Path: "/tmp/sub", Type: FsTypeDir},
+			{Path: "/tmp/a.txt", Type: FsTypeFile},
+			{Path: "/tmp/b.txt", Type: FsTypeFile},
+		},
+	}
+	selector := &FileSelector{SelectorCommon: common}
+
+	selector.selectAll()
+	if len(selector.marked) != 2 {
+		t.Fatalf("selectAll() marked size = %d, want 2", len(selector.marked))
+	}
+	if selector.Entries[0].Marked || selector.Entries[1].Marked {
+		t.Fatalf("selectAll() should not mark directory entries in file mode")
+	}
+	if !selector.Entries[2].Marked || !selector.Entries[3].Marked {
+		t.Fatalf("selectAll() should mark only file entries in file mode")
+	}
+}

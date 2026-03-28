@@ -47,6 +47,12 @@ To the marked item is displayed '*'.
 If you mark the other items, the mark of the current item is excluded.
 If you want to select multiple items at the same time, use the `--multiple` option.
 
+Select all items
+--------
+
+When `--multi` is enabled, you can press `Ctrl + A` in normal mode to select all displayed items at once.
+You can press `Ctrl + D` in normal mode to clear all selected items.
+
 
 Exit and output selected item to STDIO
 --------
@@ -111,6 +117,8 @@ Key Bindings
 | Ctrl + Q     | quit, no output (or Esc)         |
 | Ctrl + F     | filter mode (Esc to exit)        |
 | Ctrl + H     | toggle hidden file filter        |
+| Ctrl + A     | select all displayed items (`--multi` only, normal mode) |
+| Ctrl + D     | clear all selected items (`--multi` only, normal mode) |
 | Space        | select / unselect item           |
 | Arrow Up     | move cursor up                   |
 | Arrow Down   | move cursor down                 |

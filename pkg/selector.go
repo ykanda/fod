@@ -10,6 +10,8 @@ type Selector interface {
 	result() ([]string, ResultCode)
 
 	markItem()
+	selectAll()
+	clearAll()
 	markedItem() []string
 	decide() bool
 	cancel()

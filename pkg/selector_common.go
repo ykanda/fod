@@ -148,12 +148,54 @@ func (selector *SelectorCommon) markItem() {
 	if p, err := selector.currentItem(); err == nil {
 		path = p
 	}
+	if path == "../" {
+		return
+	}
 
 	switch selector.Multi {
 	case true:
 		selector.toggleItem(path, selector.getCurrentItemIndex())
 	case false:
 		selector.setItem(path, selector.getCurrentItemIndex())
+	}
+}
+
+func (selector *SelectorCommon) selectAll() {
+	selector.selectAllByType("")
+}
+
+func (selector *SelectorCommon) clearAll() {
+	if !selector.Multi {
+		return
+	}
+	for i := range selector.Entries {
+		selector.Entries[i].Marked = false
+	}
+	selector.marked = []string{}
+}
+
+func (selector *SelectorCommon) selectAllByType(targetType string) {
+	if !selector.Multi {
+		return
+	}
+
+	for i := range selector.Entries {
+		selector.Entries[i].Marked = false
+	}
+
+	entries := selector.getEntries()
+	selector.marked = make([]string, 0, len(entries))
+	for _, entry := range entries {
+		if entry.Path == "../" {
+			entry.Marked = false
+			continue
+		}
+		if targetType != "" && entry.Type != targetType {
+			entry.Marked = false
+			continue
+		}
+		entry.Marked = true
+		selector.marked = append(selector.marked, entry.Path)
 	}
 }
 
