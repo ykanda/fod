@@ -116,6 +116,9 @@ func (m dialogModel) handleKey(key tea.Key) (tea.Model, tea.Cmd) {
 		case "ctrl+a":
 			m.selector.selectAll()
 			return m, nil
+		case "ctrl+shift+a":
+			m.selector.clearAll()
+			return m, nil
 		case "ctrl+h":
 			dotfileFilterSinleton().toggle()
 			m.selector.refresh()
@@ -176,6 +179,7 @@ func buildView(dc DrawContext, width int, height int, mode inputMode, showHelp b
 			truncateLine(formatHelpLine2("Ctrl+F", "filter mode (Esc to exit)"), width),
 			truncateLine(formatHelpLine2("Ctrl+H", "toggle hidden file filter"), width),
 			truncateLine(formatHelpLine2("Ctrl+A", "select all displayed items (--multi only)"), width),
+			truncateLine(formatHelpLine2("Ctrl+Shift+A", "clear all selected items (--multi only)"), width),
 			truncateLine(formatHelpLine2("space", "select/unselect item"), width),
 			truncateLine(formatHelpLine2("↑", "move cursor up"), width),
 			truncateLine(formatHelpLine2("↓", "move cursor down"), width),

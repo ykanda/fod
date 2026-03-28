@@ -164,6 +164,16 @@ func (selector *SelectorCommon) selectAll() {
 	selector.selectAllByType("")
 }
 
+func (selector *SelectorCommon) clearAll() {
+	if !selector.Multi {
+		return
+	}
+	for i := range selector.Entries {
+		selector.Entries[i].Marked = false
+	}
+	selector.marked = []string{}
+}
+
 func (selector *SelectorCommon) selectAllByType(targetType string) {
 	if !selector.Multi {
 		return

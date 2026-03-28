@@ -180,3 +180,22 @@ func TestSelectorCommonMarkItem_ParentEntry(t *testing.T) {
 		t.Fatalf("markItem() should not mark parent entry")
 	}
 }
+
+func TestSelectorCommonClearAll(t *testing.T) {
+	sel := &SelectorCommon{
+		Multi: true,
+		Entries: []*Entry{
+			{Path: "/tmp/a", Type: FsTypeFile, Marked: true},
+			{Path: "/tmp/b", Type: FsTypeFile, Marked: true},
+		},
+		marked: []string{"/tmp/a", "/tmp/b"},
+	}
+
+	sel.clearAll()
+	if len(sel.marked) != 0 {
+		t.Fatalf("clearAll() should clear marked paths, got %#v", sel.marked)
+	}
+	if sel.Entries[0].Marked || sel.Entries[1].Marked {
+		t.Fatalf("clearAll() should unmark all entries")
+	}
+}

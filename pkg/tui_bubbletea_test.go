@@ -12,11 +12,13 @@ type keyTestSelector struct {
 	decideReturn   bool
 	decideCalled   int
 	selectAllCalled int
+	clearAllCalled int
 }
 
 func (s *keyTestSelector) result() ([]string, ResultCode) { return nil, ResultNone }
 func (s *keyTestSelector) markItem()                      {}
 func (s *keyTestSelector) selectAll()                     { s.selectAllCalled++ }
+func (s *keyTestSelector) clearAll()                      { s.clearAllCalled++ }
 func (s *keyTestSelector) markedItem() []string           { return nil }
 func (s *keyTestSelector) decide() bool {
 	s.decideCalled++
@@ -225,6 +227,35 @@ func TestHandleKey_CtrlA_InFilterMode(t *testing.T) {
 	}
 }
 
+func TestHandleKey_CtrlShiftA_InNormalMode(t *testing.T) {
+	selector := &keyTestSelector{}
+	model := dialogModel{
+		selector: selector,
+		mode:     modeNormal,
+	}
+
+	_, cmd := model.handleKey(tea.Key{Code: 'a', Mod: tea.ModCtrl | tea.ModShift})
+	if selector.clearAllCalled != 1 {
+		t.Fatalf("clearAll() called %d times, want 1", selector.clearAllCalled)
+	}
+	if cmd != nil {
+		t.Fatalf("cmd = %v, want nil", cmd)
+	}
+}
+
+func TestHandleKey_CtrlShiftA_InFilterMode(t *testing.T) {
+	selector := &keyTestSelector{}
+	model := dialogModel{
+		selector: selector,
+		mode:     modeFilter,
+	}
+
+	_, _ = model.handleKey(tea.Key{Code: 'a', Mod: tea.ModCtrl | tea.ModShift})
+	if selector.clearAllCalled != 0 {
+		t.Fatalf("clearAll() called %d times, want 0", selector.clearAllCalled)
+	}
+}
+
 func TestBuildView_HelpIncludesCtrlOAndCtrlH(t *testing.T) {
 	view := buildView(drawContextForHelp{}, 120, 20, modeNormal, true)
 	if want := "Ctrl+O"; !strings.Contains(view, want) {
@@ -234,6 +265,9 @@ func TestBuildView_HelpIncludesCtrlOAndCtrlH(t *testing.T) {
 		t.Fatalf("view does not include %q", want)
 	}
 	if want := "Ctrl+A"; !strings.Contains(view, want) {
+		t.Fatalf("view does not include %q", want)
+	}
+	if want := "Ctrl+Shift+A"; !strings.Contains(view, want) {
 		t.Fatalf("view does not include %q", want)
 	}
 }
@@ -277,18 +311,18 @@ func TestBuildView_FillsWindowHeight_WithHelp(t *testing.T) {
 		mode:         "file",
 	}
 
-	const height = 14
+	const height = 15
 	view := buildView(dc, 80, height, modeNormal, true)
 	lines := strings.Split(view, "\n")
 
 	if len(lines) != height {
 		t.Fatalf("buildView line count = %d, want %d", len(lines), height)
 	}
-	if !strings.Contains(lines[len(lines)-12], "select") {
-		t.Fatalf("status line should keep its fixed area, got: %q", lines[len(lines)-12])
+	if !strings.Contains(lines[len(lines)-13], "select") {
+		t.Fatalf("status line should keep its fixed area, got: %q", lines[len(lines)-13])
 	}
-	if !strings.Contains(lines[len(lines)-12], sgrReverseOn) {
-		t.Fatalf("status line should be highlighted by reverse style, got: %q", lines[len(lines)-12])
+	if !strings.Contains(lines[len(lines)-13], sgrReverseOn) {
+		t.Fatalf("status line should be highlighted by reverse style, got: %q", lines[len(lines)-13])
 	}
 	if !strings.Contains(lines[len(lines)-1], "toggle Help") {
 		t.Fatalf("last line should be full help footer, got: %q", lines[len(lines)-1])

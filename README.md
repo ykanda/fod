@@ -51,6 +51,7 @@ Select all items
 --------
 
 When `--multi` is enabled, you can press `Ctrl + A` in normal mode to select all displayed items at once.
+You can press `Ctrl + Shift + A` in normal mode to clear all selected items.
 
 
 Exit and output selected item to STDIO
@@ -117,6 +118,7 @@ Key Bindings
 | Ctrl + F     | filter mode (Esc to exit)        |
 | Ctrl + H     | toggle hidden file filter        |
 | Ctrl + A     | select all displayed items (`--multi` only, normal mode) |
+| Ctrl + Shift + A | clear all selected items (`--multi` only, normal mode) |
 | Space        | select / unselect item           |
 | Arrow Up     | move cursor up                   |
 | Arrow Down   | move cursor down                 |

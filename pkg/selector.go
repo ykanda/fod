@@ -11,6 +11,7 @@ type Selector interface {
 
 	markItem()
 	selectAll()
+	clearAll()
 	markedItem() []string
 	decide() bool
 	cancel()
