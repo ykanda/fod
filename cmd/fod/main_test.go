@@ -3,6 +3,7 @@ package main
 import (
 	"testing"
 
+	"github.com/urfave/cli"
 	fod "github.com/ykanda/fod/pkg"
 )
 
@@ -37,4 +38,26 @@ func TestValidateDialogResult(t *testing.T) {
 			}
 		})
 	}
+}
+
+func TestFlags_ModeUsage(t *testing.T) {
+	definedFlags, err := flags()
+	if err != nil {
+		t.Fatalf("flags() error = %v", err)
+	}
+
+	for _, f := range definedFlags {
+		flag, ok := f.(cli.StringFlag)
+		if !ok || flag.Name != "mode, m" {
+			continue
+		}
+
+		want := "start mode: d|dir|directory for directory select mode, f|file for file select mode"
+		if flag.Usage != want {
+			t.Fatalf("mode usage = %q, want %q", flag.Usage, want)
+		}
+		return
+	}
+
+	t.Fatal("mode flag not found")
 }

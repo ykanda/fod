@@ -8,8 +8,8 @@ import (
 
 func TestDirectorySelectorGetMode(t *testing.T) {
 	sel := &DirectorySelector{}
-	if sel.getMode() != "D" {
-		t.Fatalf("getMode() = %q, want %q", sel.getMode(), "D")
+	if sel.getMode() != "Dir" {
+		t.Fatalf("getMode() = %q, want %q", sel.getMode(), "Dir")
 	}
 }
 

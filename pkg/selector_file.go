@@ -6,7 +6,7 @@ type FileSelector struct {
 }
 
 func (selector *FileSelector) getMode() string {
-	return "F"
+	return "File"
 }
 
 func (selector *FileSelector) markItem() {

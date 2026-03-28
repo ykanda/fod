@@ -9,10 +9,10 @@ import (
 )
 
 type keyTestSelector struct {
-	decideReturn   bool
-	decideCalled   int
+	decideReturn    bool
+	decideCalled    int
 	selectAllCalled int
-	clearAllCalled int
+	clearAllCalled  int
 }
 
 func (s *keyTestSelector) result() ([]string, ResultCode) { return nil, ResultNone }
@@ -289,14 +289,17 @@ func TestBuildView_FillsWindowHeight_WithoutHelp(t *testing.T) {
 	if len(lines) != height {
 		t.Fatalf("buildView line count = %d, want %d", len(lines), height)
 	}
-	if !strings.Contains(lines[len(lines)-2], "select") {
-		t.Fatalf("status line should be fixed near bottom, got: %q", lines[len(lines)-2])
+	if !strings.Contains(lines[len(lines)-1], "select") {
+		t.Fatalf("status line should be fixed near bottom, got: %q", lines[len(lines)-1])
 	}
-	if !strings.Contains(lines[len(lines)-2], sgrReverseOn) {
-		t.Fatalf("status line should be highlighted by reverse style, got: %q", lines[len(lines)-2])
+	if !strings.Contains(lines[len(lines)-1], sgrReverseOn) {
+		t.Fatalf("status line should be highlighted by reverse style, got: %q", lines[len(lines)-1])
 	}
 	if !strings.Contains(lines[len(lines)-1], "? help") {
-		t.Fatalf("last line should be help line, got: %q", lines[len(lines)-1])
+		t.Fatalf("status line should include help guide, got: %q", lines[len(lines)-1])
+	}
+	if !strings.Contains(lines[len(lines)-1], "[file]") {
+		t.Fatalf("status line should include mode label, got: %q", lines[len(lines)-1])
 	}
 }
 
