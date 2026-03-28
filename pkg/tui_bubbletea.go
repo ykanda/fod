@@ -169,9 +169,8 @@ func (m dialogModel) View() tea.View {
 func buildView(dc DrawContext, width int, height int, mode inputMode, showHelp bool) string {
 	width, height = normalizeSize(width, height)
 
-	helpLines := []string{
-		truncateLine(fmt.Sprintf("[%s] ? help", dc.getMode()), width),
-	}
+	helpGuide := fmt.Sprintf("[%s] ? help ", dc.getMode())
+	helpLines := []string{}
 	if showHelp {
 		helpLines = []string{
 			truncateLine(formatHelpLine2("Ctrl+O", "quit, output selected items (or Shift + Enter)"), width),
@@ -258,13 +257,14 @@ func buildView(dc DrawContext, width int, height int, mode inputMode, showHelp b
 		lines = append(lines, "")
 	}
 
-	status1 := fmt.Sprintf(
+	statusLeft := fmt.Sprintf(
 		"select %3d of %3d items %s",
 		dc.getCurrentItemIndex()+1,
 		dc.getTotalItems(),
 		dc.getPwd(),
 	)
-	statusLine := lipgloss.NewStyle().Reverse(true).Width(width).Render(truncateLine(status1, width))
+	statusText := composeStatusLine(width, statusLeft, helpGuide)
+	statusLine := lipgloss.NewStyle().Reverse(true).Width(width).Render(statusText)
 	lines = append(lines, statusLine)
 	for i := 0; i < helpLinesCount; i++ {
 		lines = append(lines, helpLines[i])
@@ -276,6 +276,31 @@ func buildView(dc DrawContext, width int, height int, mode inputMode, showHelp b
 func formatHelpLine2(left string, right string) string {
 	const leftWidth = 12
 	return fmt.Sprintf("%-*s %s", leftWidth, left, right)
+}
+
+func composeStatusLine(width int, left string, right string) string {
+	if width <= 0 {
+		return left + " " + right
+	}
+
+	right = truncateLine(right, width)
+	rightWidth := runewidth.StringWidth(right)
+	if rightWidth >= width {
+		return right
+	}
+
+	leftLimit := width - rightWidth - 1
+	if leftLimit < 0 {
+		leftLimit = 0
+	}
+	left = truncateLine(left, leftLimit)
+	leftWidth := runewidth.StringWidth(left)
+
+	spaces := width - leftWidth - rightWidth
+	if spaces < 1 {
+		spaces = 1
+	}
+	return left + strings.Repeat(" ", spaces) + right
 }
 
 func marked(m bool) string {

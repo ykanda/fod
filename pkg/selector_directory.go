@@ -6,7 +6,7 @@ type DirectorySelector struct {
 }
 
 func (selector *DirectorySelector) getMode() string {
-	return "D"
+	return "Dir"
 }
 
 func (selector *DirectorySelector) markItem() {

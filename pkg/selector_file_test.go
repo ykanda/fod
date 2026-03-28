@@ -8,8 +8,8 @@ import (
 
 func TestFileSelectorGetMode(t *testing.T) {
 	sel := &FileSelector{}
-	if sel.getMode() != "F" {
-		t.Fatalf("getMode() = %q, want %q", sel.getMode(), "F")
+	if sel.getMode() != "File" {
+		t.Fatalf("getMode() = %q, want %q", sel.getMode(), "File")
 	}
 }
 

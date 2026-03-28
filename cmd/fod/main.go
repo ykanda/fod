@@ -12,7 +12,7 @@ import (
 	"strings"
 
 	"github.com/urfave/cli"
-	"github.com/ykanda/fod/pkg"
+	fod "github.com/ykanda/fod/pkg"
 )
 
 var (
@@ -120,6 +120,7 @@ func flags() ([]cli.Flag, error) {
 		cli.StringFlag{
 			Name:  "mode, m",
 			Value: fod.ModeFile.String(),
+			Usage: "start mode: d|dir|directory for directory select mode, f|file for file select mode",
 		},
 		cli.StringFlag{
 			Name:  "base, b",
