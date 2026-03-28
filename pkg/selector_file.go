@@ -14,3 +14,7 @@ func (selector *FileSelector) markItem() {
 		selector.SelectorCommon.markItem()
 	}
 }
+
+func (selector *FileSelector) selectAll() {
+	selector.SelectorCommon.selectAllByType(FsTypeFile)
+}

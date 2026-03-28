@@ -14,3 +14,7 @@ func (selector *DirectorySelector) markItem() {
 		selector.SelectorCommon.markItem()
 	}
 }
+
+func (selector *DirectorySelector) selectAll() {
+	selector.SelectorCommon.selectAllByType(FsTypeDir)
+}

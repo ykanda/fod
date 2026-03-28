@@ -161,6 +161,10 @@ func (selector *SelectorCommon) markItem() {
 }
 
 func (selector *SelectorCommon) selectAll() {
+	selector.selectAllByType("")
+}
+
+func (selector *SelectorCommon) selectAllByType(targetType string) {
 	if !selector.Multi {
 		return
 	}
@@ -173,6 +177,10 @@ func (selector *SelectorCommon) selectAll() {
 	selector.marked = make([]string, 0, len(entries))
 	for _, entry := range entries {
 		if entry.Path == "../" {
+			entry.Marked = false
+			continue
+		}
+		if targetType != "" && entry.Type != targetType {
 			entry.Marked = false
 			continue
 		}
