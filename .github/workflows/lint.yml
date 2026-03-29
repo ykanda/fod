@@ -1,4 +1,4 @@
-name: Review and Lint
+name: Lint
 
 on:
   pull_request:
@@ -9,26 +9,8 @@ on:
 
 permissions:
   contents: read
-  pull-requests: write
 
 jobs:
-  review:
-    name: Review (reviewdog)
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-
-      - name: Run reviewdog with golangci-lint
-        uses: reviewdog/action-golangci-lint@v2
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          golangci_lint_version: v2.11.4
-          reporter: github-pr-review
-          level: warning
-
   lint:
     name: Lint (golangci-lint)
     runs-on: ubuntu-latest
